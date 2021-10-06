@@ -42,36 +42,43 @@ function catalogMonsters(monster_links) {
 
 function readDetails(details) {
     const og_url = document.querySelectorAll('[property="og:url"]')[0].outerHTML
+
+    const name = document.getElementsByClassName("mon-stat-block__name-link")[0].getAttribute("href").split("/")[2]
     start_text = "<!DOCTYPE html><html>"+og_url+"<head></head><body>"
     end_text = "</body></html>"
-    const name = document.getElementsByClassName("mon-stat-block__name-link")[0].getAttribute("href").split("/")[2]
-
-    // console.log(name + ".txt")
-    // console.log(details[0].innerHTML)
-    var details_html = start_text + details[0].outerHTML + end_text
-    var blob = new Blob([details_html],{type: "text/html"})
-    var url = URL.createObjectURL(blob)
-    var filename = name + '.html'
-    var param = {
-        method: 'download',
-        collection: url,
-        filename: filename
-    }
-    chrome.runtime.sendMessage(param)
-    let label = document.createElement("p");
-    label.innerHTML = 'Downloaded!'
-    document.getElementsByClassName("page-title")[0].appendChild(label);
-    print_random_encounter(name)    
-
+    var param1 = name
+    var key = name
+    nu = chrome.storage.local.get(key, function(val) {
+        // Create property if does not exist (yet)
+        if (typeof val[key] != 'string') {
+            var details_html = start_text + details[0].outerHTML + end_text
+            var blob = new Blob([details_html],{type: "text/html"})
+            var url = URL.createObjectURL(blob)
+            var filename = name + '.html'
+            var param = {
+                method: 'download',
+                collection: url,
+                filename: filename
+            }
+            chrome.runtime.sendMessage(param)
+            let label = document.createElement("p");
+            label.innerHTML = 'Downloaded!'
+            document.getElementsByClassName("page-title")[0].appendChild(label)
+            // Append value of param1
+            val[key] += param1;
+            // Save data
+            chrome.storage.local.set(val);
+        } 
+        else {printRandomEncounter(name)};
+    });
 }
 
-function print_random_encounter(monster) {
+function printRandomEncounter(monster) {
     var params = {format: 'html'}
     var encounter = httpGet('http://localhost:8080/api/party-up/'+monster, params)
     var encounter_ele = document.createElement('div')
     encounter_ele.innerHTML = encounter
     document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
-
 }
 
 function httpGet(theUrl, params) {
@@ -80,7 +87,6 @@ function httpGet(theUrl, params) {
     // xmlHttp.setRequestHeader()
     xmlHttp.send( params );
     return xmlHttp.responseText
-
 }
 
 onPageLoad()

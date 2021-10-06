@@ -15,5 +15,6 @@
   "background": {
     "scripts": ["background.js"]
   },
-  "permissions": ["tabs","downloads"]
+  "options_page": "options.html",
+  "permissions": ["tabs","downloads","storage"]
 }
