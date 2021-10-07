@@ -74,11 +74,24 @@ function readDetails(details) {
 }
 
 function printRandomEncounter(monster) {
-    var params = {format: 'html'}
-    var encounter = httpGet('http://localhost:8080/api/party-up/'+monster, params)
-    var encounter_ele = document.createElement('div')
-    encounter_ele.innerHTML = encounter
-    document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
+    
+    chrome.storage.local.get(['avg_level'], function (avg_level) {
+        var params = {
+            format: 'html',
+            num_chars: 4,
+            avg_level: avg_level
+
+        }
+        // Not working! - how do I get from chrome.storage! or am I saving things wrong
+        console.log(avg_level)
+        // console.log(result_2['num_chars'])
+        var encounter = httpGet('http://localhost:8080/api/party-up/'+monster, params)
+        var encounter_ele = document.createElement('div')
+        encounter_ele.innerHTML = encounter
+        document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
+        
+    })
+
 }
 
 function httpGet(theUrl, params) {
