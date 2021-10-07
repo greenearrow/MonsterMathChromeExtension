@@ -48,7 +48,7 @@ function readDetails(details) {
     end_text = "</body></html>"
     var param1 = name
     var key = name
-    nu = chrome.storage.local.get(key, function(val) {
+    chrome.storage.local.get(key, function(val) {
         // Create property if does not exist (yet)
         if (typeof val[key] != 'string') {
             var details_html = start_text + details[0].outerHTML + end_text
@@ -74,31 +74,34 @@ function readDetails(details) {
 }
 
 function printRandomEncounter(monster) {
-    
-    chrome.storage.local.get(['avg_level'], function (avg_level) {
-        var params = {
-            format: 'html',
-            num_chars: 4,
-            avg_level: avg_level
+    chrome.storage.local.get(['difficulty'], function (difficulty) {
+        chrome.storage.local.get(['num_chars'], function (num_chars) {
+            chrome.storage.local.get(['avg_level'], function (avg_level) {
+                var params = {
+                    format: 'html',
+                    difficulty: difficulty["difficulty"],
+                    characters: num_chars["num_chars"],
+                    level: avg_level["avg_level"]
 
-        }
-        // Not working! - how do I get from chrome.storage! or am I saving things wrong
-        console.log(avg_level)
-        // console.log(result_2['num_chars'])
-        var encounter = httpGet('http://localhost:8080/api/party-up/'+monster, params)
-        var encounter_ele = document.createElement('div')
-        encounter_ele.innerHTML = encounter
-        document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
-        
+                }
+                console.log(params)
+                // console.log(result_2['num_chars'])
+                var encounter = httpGet('http://localhost:8080/api/party-up/'+monster, params)
+                var encounter_ele = document.createElement('div')
+                encounter_ele.innerHTML = encounter
+                document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
+                
+            })
+        })
     })
 
 }
 
 function httpGet(theUrl, params) {
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false);
+    xmlHttp.open( "POST", theUrl, false);
     // xmlHttp.setRequestHeader()
-    xmlHttp.send( params );
+    xmlHttp.send( JSON.stringify(params) );
     return xmlHttp.responseText
 }
 
