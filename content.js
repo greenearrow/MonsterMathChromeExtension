@@ -86,7 +86,7 @@ function printRandomEncounter(monster) {
                 }
                 console.log(params)
                 // console.log(result_2['num_chars'])
-                var encounter = httpGet('http://localhost:8080/api/party-up/'+monster, params)
+                var encounter = httpGet('https://1xtramonkey.net/api/party-up/'+monster, params)
                 var encounter_ele = document.createElement('div')
                 encounter_ele.innerHTML = encounter
                 document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
