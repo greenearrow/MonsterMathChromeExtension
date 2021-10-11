@@ -42,12 +42,11 @@ function catalogMonsters(monster_links) {
 
 function readDetails(details) {
     const og_url = document.querySelectorAll('[property="og:url"]')[0].outerHTML
-
     const name = document.getElementsByClassName("mon-stat-block__name-link")[0].getAttribute("href").split("/")[2]
-    start_text = "<!DOCTYPE html><html>"+og_url+"<head></head><body>"
-    end_text = "</body></html>"
     var param1 = name
     var key = name
+    start_text = "<!DOCTYPE html><html>"+og_url+"<head></head><body>"
+    end_text = "</body></html>"
     chrome.storage.local.get(key, function(val) {
         // Create property if does not exist (yet)
         if (typeof val[key] != 'string') {
