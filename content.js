@@ -1,19 +1,3 @@
-//alert('Grrr.')
-// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-//   const re = new RegExp('bear', 'gi')
-//   const matches = document.documentElement.innerHTML.match(re)
-//   sendResponse({count: matches.length})
-// })
-
-// const re = new RegExp('bear', 'gi')
-// const matches = document.documentElement.innerHTML.match(re) || []
-
-// chrome.runtime.sendMessage({
-//   url: window.location.href,
-//   count: matches.length
-// })
-
-
 function onPageLoad() {
     const details = document.getElementsByClassName("more-info")
     const monster_links = document.getElementsByClassName("monster-tooltip")
@@ -64,7 +48,8 @@ function readDetails(details) {
             label.innerHTML = 'Downloaded!'
             document.getElementsByClassName("page-title")[0].appendChild(label)
             // Append value of param1
-            val[key] += param1;
+            console.log(param1)
+            val[key] = param1;
             // Save data
             chrome.storage.local.set(val);
         } 
