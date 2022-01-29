@@ -1,10 +1,14 @@
 function onPageLoad() {
     const details = document.getElementsByClassName("more-info")
     const monster_links = document.getElementsByClassName("monster-tooltip")
+    const mm_options = document.getElementsByClassName("MM-options")
+    if (mm_options.length != 0) {
+        console.log("I'm on my options page!")
+    }
     if (details.length != 0) {
         readDetails(details)
     }
-    if (monster_links.length !=0) {
+    if (monster_links.length != 0) {
         catalogMonsters(monster_links)
     }
 
@@ -13,8 +17,8 @@ function onPageLoad() {
 function catalogMonsters(monster_links) {
     var monsters = ''
     for (link in monster_links) {
-        if (link == parseInt(link,10)) {
-            monsters = monsters + '<p>'+ monster_links[link].getAttribute("href") + '</p>'
+        if (link == parseInt(link, 10)) {
+            monsters = monsters + '<p>' + monster_links[link].getAttribute("href") + '</p>'
         }
     }
     var param = {
@@ -29,13 +33,13 @@ function readDetails(details) {
     const name = document.getElementsByClassName("mon-stat-block__name-link")[0].getAttribute("href").split("/")[2]
     var param1 = name
     var key = name
-    start_text = "<!DOCTYPE html><html>"+og_url+"<head></head><body>"
+    start_text = "<!DOCTYPE html><html>" + og_url + "<head></head><body>"
     end_text = "</body></html>"
-    chrome.storage.local.get(key, function(val) {
+    chrome.storage.local.get(key, function (val) {
         // Create property if does not exist (yet)
         if (typeof val[key] != 'string') {
             var details_html = start_text + details[0].outerHTML + end_text
-            var blob = new Blob([details_html],{type: "text/html"})
+            var blob = new Blob([details_html], { type: "text/html" })
             var url = URL.createObjectURL(blob)
             var filename = name + '.html'
             var param = {
@@ -52,8 +56,8 @@ function readDetails(details) {
             val[key] = param1;
             // Save data
             chrome.storage.local.set(val);
-        } 
-        else {printRandomEncounter(name)};
+        }
+        else { printRandomEncounter(name) };
     });
 }
 
@@ -68,13 +72,11 @@ function printRandomEncounter(monster) {
                     level: avg_level["avg_level"]
 
                 }
-                console.log(params)
-                // console.log(result_2['num_chars'])
-                var encounter = httpGet('https://1xtramonkey.net/api/party-up/'+monster, params)
+                var encounter = httpGet('https://localhost:8080/api/party-up/' + monster, params)
                 var encounter_ele = document.createElement('div')
                 encounter_ele.innerHTML = encounter
                 document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
-                
+
             })
         })
     })
@@ -83,9 +85,9 @@ function printRandomEncounter(monster) {
 
 function httpGet(theUrl, params) {
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "POST", theUrl, false);
+    xmlHttp.open("POST", theUrl, false);
     // xmlHttp.setRequestHeader()
-    xmlHttp.send( JSON.stringify(params) );
+    xmlHttp.send(JSON.stringify(params));
     return xmlHttp.responseText
 }
 
