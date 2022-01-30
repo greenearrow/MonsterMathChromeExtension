@@ -72,7 +72,7 @@ function printRandomEncounter(monster) {
                     level: avg_level["avg_level"]
 
                 }
-                var encounter = httpGet('https://localhost:8080/api/party-up/' + monster, params)
+                var encounter = httpGet('http://localhost:8080/api/party-up/' + monster, params)
                 var encounter_ele = document.createElement('div')
                 encounter_ele.innerHTML = encounter
                 document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
