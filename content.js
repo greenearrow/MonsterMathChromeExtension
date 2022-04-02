@@ -1,6 +1,8 @@
 function onPageLoad() {
     const details = document.getElementsByClassName("more-info")
     const monster_links = document.getElementsByClassName("monster-tooltip")
+    const item_links = document.getElementsByClassName("magic-item-tooltip")
+    const spell_links = document.getElementsByClassName("spell-tooltip")
     const mm_options = document.getElementsByClassName("MM-options")
     if (mm_options.length != 0) {
         console.log("I'm on my options page!")
@@ -11,19 +13,34 @@ function onPageLoad() {
     if (monster_links.length != 0) {
         catalogMonsters(monster_links)
     }
+    if (item_links.length != 0) {
+        catalogItems(item_links)
+    }
 
 };
 
 function catalogMonsters(monster_links) {
     var monsters = ''
+    // var monsters_ = ''
     for (link in monster_links) {
-        if (link == parseInt(link, 10)) {
-            monsters = monsters + '<p>' + monster_links[link].getAttribute("href") + '</p>'
-        }
+        monsters = monsters + monster_links[link].outerHTML
     }
     var param = {
         method: 'store monster',
         monsters: monsters
+    }
+    chrome.runtime.sendMessage(param)
+}
+function catalogItems(item_links) {
+    var items = ''
+    for (link in item_links) {
+        if (link == parseInt(link, 10)) {
+            items = items + item_links[link].outerHTML
+        }
+    }
+    var param = {
+        method: 'store item',
+        items: items
     }
     chrome.runtime.sendMessage(param)
 }
