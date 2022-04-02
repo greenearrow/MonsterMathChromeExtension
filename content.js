@@ -23,7 +23,7 @@ function catalogMonsters(monster_links) {
     var monsters = ''
     // var monsters_ = ''
     for (link in monster_links) {
-        monsters = monsters + monster_links[link].outerHTML
+        monsters = monsters + '<br/>' + monster_links[link].outerHTML
     }
     var param = {
         method: 'store monster',
@@ -35,7 +35,7 @@ function catalogItems(item_links) {
     var items = ''
     for (link in item_links) {
         if (link == parseInt(link, 10)) {
-            items = items + item_links[link].outerHTML
+            items = items + '<br/>' + item_links[link].outerHTML
         }
     }
     var param = {

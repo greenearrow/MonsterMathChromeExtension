@@ -3,13 +3,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   Object.keys(bg.bears).forEach(function (url) {
     const div = document.createElement('div')
-    div.textContent = `${url}: ${bg.bears[url]}`
+    div.innerHTML = bg.bears[url]
     document.body.appendChild(div)
   })
 
   Object.keys(bg.items).forEach(function (url) {
     const div = document.createElement('div')
-    div.textContent = `${url}: ${bg.items[url]}`
+    div.innerHTML = bg.items[url]
     document.body.appendChild(div)
   })
 
