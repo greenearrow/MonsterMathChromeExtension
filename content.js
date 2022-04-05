@@ -30,6 +30,7 @@ function catalogMonsters(monster_links) {
         monsters: monsters
     }
     chrome.runtime.sendMessage(param)
+    monsterBox(monsters)
 }
 function catalogItems(item_links) {
     var items = ''
@@ -43,6 +44,7 @@ function catalogItems(item_links) {
         items: items
     }
     chrome.runtime.sendMessage(param)
+
 }
 
 function readDetails(details) {
@@ -98,6 +100,13 @@ function printRandomEncounter(monster) {
         })
     })
 
+}
+
+function monsterBox(monsters) {
+    var monster_box = document.createElement('div')
+    monster_box.classList.add('secondary-content')
+    monster_box.innerHTML = monsters
+    document.getElementsByClassName('main content-container')[0].appendChild(monster_box)
 }
 
 function httpGet(theUrl, params) {
