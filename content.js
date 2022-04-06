@@ -22,8 +22,11 @@ function onPageLoad() {
 function catalogMonsters(monster_links) {
     var monsters = ''
     // var monsters_ = ''
-    for (link in monster_links) {
-        monsters = monsters + '<br/>' + monster_links[link].outerHTML
+    for (var link = 0; link < monster_links.length; link++) {
+
+        if (monsters.includes(monster_links[link].outerHTML) == false) {
+            monsters = monsters + '<br/>' + monster_links[link].outerHTML
+        }
     }
     var param = {
         method: 'store monster',
@@ -34,8 +37,8 @@ function catalogMonsters(monster_links) {
 }
 function catalogItems(item_links) {
     var items = ''
-    for (link in item_links) {
-        if (link == parseInt(link, 10)) {
+    for (var link = 0; link < item_links.length; link++) {
+        if (items.includes(item_links[link].outerHTML) == false) {
             items = items + '<br/>' + item_links[link].outerHTML
         }
     }
@@ -44,7 +47,7 @@ function catalogItems(item_links) {
         items: items
     }
     chrome.runtime.sendMessage(param)
-
+    itemBox(items)
 }
 
 function readDetails(details) {
@@ -103,10 +106,18 @@ function printRandomEncounter(monster) {
 }
 
 function monsterBox(monsters) {
-    var monster_box = document.createElement('div')
+    var monster_box = document.createElement('section')
     monster_box.classList.add('secondary-content')
+    monster_box.classList.add('monster-math-box')
     monster_box.innerHTML = monsters
     document.getElementsByClassName('main content-container')[0].appendChild(monster_box)
+}
+
+function itemBox(items) {
+    var item_box = document.createElement('div')
+
+    item_box.innerHTML = items
+    document.getElementsByClassName('monster-math-box')[0].appendChild(item_box)
 }
 
 function httpGet(theUrl, params) {
