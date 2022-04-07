@@ -105,19 +105,29 @@ function printRandomEncounter(monster) {
 
 }
 
+function mathBox() {
+    if (document.getElementsByClassName('math-box'.len==0)) {
+        var math_box = document.createElement('section')
+        math_box.classList.add('math-box')
+        document.getElementsByClassName('main content-container')[0].appendChild(math_box)
+    }
+}
+
 function monsterBox(monsters) {
-    var monster_box = document.createElement('section')
-    monster_box.classList.add('secondary-content')
-    monster_box.classList.add('monster-math-box')
+    mathBox()
+    var monster_box = document.createElement('div')
+    monster_box.classList.add('monster-box')
     monster_box.innerHTML = monsters
-    document.getElementsByClassName('main content-container')[0].appendChild(monster_box)
+    document.getElementsByClassName('math-box')[0].appendChild(monster_box)
+
 }
 
 function itemBox(items) {
+    mathBox()
     var item_box = document.createElement('div')
-
+    item_box.classList.add('item-box')
     item_box.innerHTML = items
-    document.getElementsByClassName('monster-math-box')[0].appendChild(item_box)
+    document.getElementsByClassName('math-box')[0].appendChild(item_box)
 }
 
 function httpGet(theUrl, params) {
