@@ -107,9 +107,11 @@ function printRandomEncounter(monster) {
 
 function mathBox() {
     if (document.getElementsByClassName('math-box'.len==0)) {
+        var main_content_container = document.getElementsByClassName('main content-container')[0]
         var math_box = document.createElement('section')
         math_box.classList.add('math-box')
-        document.getElementsByClassName('main content-container')[0].appendChild(math_box)
+
+        main_content_container.appendChild(math_box)
     }
 }
 
@@ -126,6 +128,7 @@ function itemBox(items) {
     mathBox()
     var item_box = document.createElement('div')
     item_box.classList.add('item-box')
+//    item_box.style.backgroundColor = 'gray';
     item_box.innerHTML = items
     document.getElementsByClassName('math-box')[0].appendChild(item_box)
 }
