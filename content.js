@@ -106,7 +106,7 @@ function printRandomEncounter(monster) {
 }
 
 function mathBox() {
-    if (document.getElementsByClassName('math-box'.len==0)) {
+    if (document.getElementsByClassName('math-box'.len == 0)) {
         var main_content_container = document.getElementsByClassName('main content-container')[0]
         var math_box = document.createElement('section')
         math_box.classList.add('math-box')
@@ -128,7 +128,7 @@ function itemBox(items) {
     mathBox()
     var item_box = document.createElement('div')
     item_box.classList.add('item-box')
-//    item_box.style.backgroundColor = 'gray';
+    //    item_box.style.backgroundColor = 'gray';
     item_box.innerHTML = items
     document.getElementsByClassName('math-box')[0].appendChild(item_box)
 }
@@ -139,6 +139,35 @@ function httpGet(theUrl, params) {
     // xmlHttp.setRequestHeader()
     xmlHttp.send(JSON.stringify(params));
     return xmlHttp.responseText
+}
+
+function link_decompose(collection) {
+    var hrefs = []
+    for (var link = 0; link < collection.length; link++) {
+        if (!(collection[link.href] in hrefs)) {
+            hrefs.push(collection[link].href)
+        }
+    }
+    hrefs = hrefs.filter(onlyUnique)
+    var dict = Object()
+    for (var link = 0; link < hrefs.length; link++) {
+        dict[hrefs[link]] = {
+            'name': '',
+            'members': []
+        }
+    }
+    for (var link = 0; link < collection.length; link++) {
+        dict[collection[link].href]['name'] = collection[link].innerHTML
+        dict[collection[link].href]['members'].push(collection[link])
+    }
+    for (link in dict) {
+        console.log(dict[link].name)
+    }
+    return dict
+}
+
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
 }
 
 onPageLoad()
