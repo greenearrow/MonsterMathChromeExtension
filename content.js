@@ -22,24 +22,25 @@ function onPageLoad() {
 function catalogMonsters(monster_links) {
     var monsters = ''
     // var monsters_ = ''
-    for (var link = 0; link < monster_links.length; link++) {
-
-        if (monsters.includes(monster_links[link].outerHTML) == false) {
-            monsters = monsters + '<br/>' + monster_links[link].outerHTML
-        }
+    var links = link_decompose(monster_links, 'monster')
+    for (var link = 0; link < links.length; link++) {
+        var my_link = links[link].pretty_link
+//        my_link.classList.add('monster-tooltip')
+        monsters = monsters + '<br/>' + my_link.outerHTML
     }
+    console.log(monsters)
     var param = {
         method: 'store monster',
         monsters: monsters
     }
-    chrome.runtime.sendMessage(param)
+    // chrome.runtime.sendMessage(param)
     monsterBox(monsters)
 }
 function catalogItems(item_links) {
     var items = ''
     for (var link = 0; link < item_links.length; link++) {
         if (items.includes(item_links[link].outerHTML) == false) {
-            items = items + '<br/>' + item_links[link].outerHTML
+            items = items + '<br/>' + item_links[link].outerHTML //GAH! NEED TO USE DOM, for some reason fails as is
         }
     }
     var param = {
@@ -141,8 +142,9 @@ function httpGet(theUrl, params) {
     return xmlHttp.responseText
 }
 
-function link_decompose(collection) {
+function link_decompose(collection, link_type) {
     var hrefs = []
+    var names = Object()
     for (var link = 0; link < collection.length; link++) {
         if (!(collection[link.href] in hrefs)) {
             hrefs.push(collection[link].href)
@@ -152,22 +154,72 @@ function link_decompose(collection) {
     var dict = Object()
     for (var link = 0; link < hrefs.length; link++) {
         dict[hrefs[link]] = {
-            'name': '',
-            'members': []
+            'names': [],
+            'name': "",
+            'members': [],
+            'link': '',
+            'pretty_link': document.createElement('a')
         }
     }
     for (var link = 0; link < collection.length; link++) {
-        dict[collection[link].href]['name'] = collection[link].innerHTML
-        dict[collection[link].href]['members'].push(collection[link])
+        var my_object = collection[link]
+        dict[my_object.href].names.push(my_object.innerHTML)
+
+        dict[my_object.href].members.push(my_object)
+
+        var path = my_object.href.split('-').slice(1).join('-') // THIS IS BASED ON THE NON-KEYED NAME - TEXT ONLY, NOT LEADING NUMBER
+        var a = document.createElement('a');
+        a.href = 'https://1xtramonkey.net/' + link_type + '/' + path
+        var text = document.createElement('SUP')
+        text.innerHTML = '🐵'
+        a.appendChild(text)
+        a.title = 'Lookup ' + my_object.innerHTML + ' on 1xtramonkey'
+        my_object.parentNode.insertBefore(a, my_object.nextSibling)
     }
     for (link in dict) {
-        console.log(dict[link].name)
+        dict[link].names = dict[link].names.filter(onlyUnique)
+        dict[link].link = link
+        dict[link].name = titleCase(returnShortest(dict[link].names)[0])
+        names[dict[link].name] = link
     }
-    return dict
+    var sorted_names = Object.keys(names).sort()
+    var response = []
+
+    for (var n = 0; n < sorted_names.length; n++) {
+        var link = names[sorted_names[n]]
+        var my_object = dict[link]
+        my_object = dict[link]
+        my_object.pretty_link.href = link
+        my_object.pretty_link.innerHTML = sorted_names[n]
+        response.push(my_object)
+    }
+    return response
 }
 
 function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
+}
+
+function returnShortest(value) {
+    var response = []
+    var lengths = []
+    for (i = 0; i < value.length; i++) lengths.push(value[i].length)
+    var min = Math.min(...lengths)
+    for (v = 0; v < value.length; v++) {
+        if (lengths[v] == min) {
+            response.push(value[v])
+        }
+    }
+    return response
+}
+
+function titleCase(string) {
+    var sentence = string.toLowerCase().split(" ");
+    for (var i = 0; i < sentence.length; i++) {
+        sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
+    }
+
+    return sentence.join(" ");
 }
 
 onPageLoad()

@@ -1,8 +1,9 @@
 {
-    "name": "DND Beyond Go!",
+    "name": "1xtramonkey D&D Beyond Integration!",
     "description": "Capture DND Beyond stat blocks when you load the page",
     "version": "1.0",
     "manifest_version": 3,
+
     "content_scripts": [
       {
         "matches": ["<all_urls>"],
