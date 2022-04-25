@@ -1,5 +1,7 @@
+const xtraMonkeyHost = 'https://1xtramonkey.net'
 function onPageLoad() {
     const details = document.getElementsByClassName("more-info")
+    const article = document.getElementsByClassName('p-article')
     const monster_links = document.getElementsByClassName("monster-tooltip")
     const item_links = document.getElementsByClassName("magic-item-tooltip")
     const spell_links = document.getElementsByClassName("spell-tooltip")
@@ -10,6 +12,9 @@ function onPageLoad() {
     if (details.length != 0) {
         readDetails(details)
     }
+    // if (article.length != 0) {
+    //     readDetails(article)
+    // }
     if (monster_links.length != 0) {
         catalogMonsters(monster_links)
     }
@@ -25,8 +30,14 @@ function catalogMonsters(monster_links) {
     var links = link_decompose(monster_links, 'monster')
     for (var link = 0; link < links.length; link++) {
         var my_link = links[link].pretty_link
-//        my_link.classList.add('monster-tooltip')
+        //        my_link.classList.add('monster-tooltip')
         monsters = monsters + '<br/>' + my_link.outerHTML
+        for (var p = 0; p < links[link].parent_id.length; p++) {
+            var a = document.createElement('a')
+            a.href = "#" + links[link].parent_id[p]
+            a.innerHTML = p + 1
+            monsters = monsters + ' ' + a.outerHTML
+        }
     }
     console.log(monsters)
     var param = {
@@ -53,7 +64,13 @@ function catalogItems(item_links) {
 
 function readDetails(details) {
     const og_url = document.querySelectorAll('[property="og:url"]')[0].outerHTML
-    const name = document.getElementsByClassName("mon-stat-block__name-link")[0].getAttribute("href").split("/")[2]
+    var names = document.getElementsByClassName("mon-stat-block__name-link")
+    if (names.length != 0) {
+        var name = document.getElementsByClassName("mon-stat-block__name-link")[0].getAttribute("href").split("/")[2]
+    }
+    // } else {
+    // var name = document.getElementsByClassName('Core-Styles_Chapter-Title')[0].innerHTML 
+    // }
     var param1 = name
     var key = name
     start_text = "<!DOCTYPE html><html>" + og_url + "<head></head><body>"
@@ -143,14 +160,16 @@ function httpGet(theUrl, params) {
 }
 
 function link_decompose(collection, link_type) {
+    // Get list of applicable links
     var hrefs = []
-    var names = Object()
     for (var link = 0; link < collection.length; link++) {
         if (!(collection[link.href] in hrefs)) {
             hrefs.push(collection[link].href)
         }
     }
     hrefs = hrefs.filter(onlyUnique)
+
+    // apply structured object to each link
     var dict = Object()
     for (var link = 0; link < hrefs.length; link++) {
         dict[hrefs[link]] = {
@@ -158,24 +177,32 @@ function link_decompose(collection, link_type) {
             'name': "",
             'members': [],
             'link': '',
-            'pretty_link': document.createElement('a')
+            'pretty_link': document.createElement('a'),
+            'parent_id': []
         }
     }
+
+    // populate structure with details
     for (var link = 0; link < collection.length; link++) {
         var my_object = collection[link]
         dict[my_object.href].names.push(my_object.innerHTML)
-
         dict[my_object.href].members.push(my_object)
 
+        // Provide 1xtramonkey link 
         var path = my_object.href.split('-').slice(1).join('-') // THIS IS BASED ON THE NON-KEYED NAME - TEXT ONLY, NOT LEADING NUMBER
         var a = document.createElement('a');
-        a.href = 'https://1xtramonkey.net/' + link_type + '/' + path
+        a.href = xtraMonkeyHost + '/' + link_type + '/' + path
         var text = document.createElement('SUP')
         text.innerHTML = '🐵'
         a.appendChild(text)
         a.title = 'Lookup ' + my_object.innerHTML + ' on 1xtramonkey'
         my_object.parentNode.insertBefore(a, my_object.nextSibling)
+
+        // Gather parent content-chunk-id and return as linkable id
+        my_object.parentElement.id = my_object.parentElement.dataset.contentChunkId
+        dict[my_object.href].parent_id.push(my_object.parentElement.dataset.contentChunkId)
     }
+    var names = Object()
     for (link in dict) {
         dict[link].names = dict[link].names.filter(onlyUnique)
         dict[link].link = link
