@@ -1,4 +1,5 @@
 const xtraMonkeyHost = 'https://1xtramonkey.net'
+const alpha = 'abcdefghijklmnopqrstuvwxyz'
 function onPageLoad() {
     const details = document.getElementsByClassName("more-info")
     const article = document.getElementsByClassName('p-article')
@@ -6,6 +7,7 @@ function onPageLoad() {
     const item_links = document.getElementsByClassName("magic-item-tooltip")
     const spell_links = document.getElementsByClassName("spell-tooltip")
     const mm_options = document.getElementsByClassName("MM-options")
+    var hop_list = Object()
     if (mm_options.length != 0) {
         console.log("I'm on my options page!")
     }
@@ -16,21 +18,23 @@ function onPageLoad() {
     //     readDetails(article)
     // }
     if (monster_links.length != 0) {
-        catalogMonsters(monster_links)
+        hop_list = catalogMonsters(monster_links, hop_list)
     }
     if (item_links.length != 0) {
-        catalogItems(item_links)
+        hop_list = catalogItems(item_links, hop_list)
     }
-    if (spell_links.length !=0) {
-        catalogSpells(spell_links)
+    if (spell_links.length != 0) {
+        hop_list = catalogSpells(spell_links, hop_list)
     }
 
 };
 
-function catalogMonsters(raw_a) {
+function catalogMonsters(raw_a, hop_list) {
     var my_html = ''
     // var monsters_ = ''
-    var links = link_decompose(raw_a, 'monster')
+    var temp = link_decompose(raw_a, 'monster', hop_list)
+    var links = temp[0]
+    hop_list = temp[1]
     for (var link = 0; link < links.length; link++) {
         var my_link = links[link].pretty_link
         //        my_link.classList.add('monster-tooltip')
@@ -38,7 +42,7 @@ function catalogMonsters(raw_a) {
         for (var p = 0; p < links[link].parent_id.length; p++) {
             var a = document.createElement('a')
             a.href = "#" + links[link].parent_id[p]
-            a.innerHTML = p + 1
+            a.innerHTML = links[link].parent_id[p]
             my_html = my_html + ' ' + a.outerHTML
         }
     }
@@ -48,12 +52,15 @@ function catalogMonsters(raw_a) {
     //     monsters: my_html
     // }
     // chrome.runtime.sendMessage(param)
-    monsterBox(my_html)
+    insideMathBox(my_html, 'monster-box')
+    return hop_list
 }
-function catalogItems(raw_a) {
+function catalogItems(raw_a, hop_list) {
     var my_html = ''
     // var monsters_ = ''
-    var links = link_decompose(raw_a, 'item')
+    var temp = link_decompose(raw_a, 'item', hop_list)
+    var links = temp[0]
+    hop_list = temp[1]
     for (var link = 0; link < links.length; link++) {
         var my_link = links[link].pretty_link
         //        my_link.classList.add('monster-tooltip')
@@ -65,13 +72,16 @@ function catalogItems(raw_a) {
             my_html = my_html + ' ' + a.outerHTML
         }
     }
-    
-    itemBox(my_html)
+
+    insideMathBox(my_html, 'item-box')
+    return hop_list
 }
-function catalogSpells(raw_a) {
+function catalogSpells(raw_a, hop_list) {
     var my_html = ''
     // var monsters_ = ''
-    var links = link_decompose(raw_a, 'spell')
+    var temp = link_decompose(raw_a, 'spell', hop_list)
+    var links = temp[0]
+    hop_list = temp[1]
     for (var link = 0; link < links.length; link++) {
         var my_link = links[link].pretty_link
         //        my_link.classList.add('monster-tooltip')
@@ -83,8 +93,9 @@ function catalogSpells(raw_a) {
             my_html = my_html + ' ' + a.outerHTML
         }
     }
-    
-    insideMathBox(my_html,'spell-box')
+
+    insideMathBox(my_html, 'spell-box')
+    return hop_list
 }
 function readDetails(details) {
     const og_url = document.querySelectorAll('[property="og:url"]')[0].outerHTML
@@ -157,25 +168,25 @@ function mathBox() {
     }
 }
 
-function monsterBox(monsters) {
-    mathBox()
-    var monster_box = document.createElement('div')
-    monster_box.classList.add('monster-box')
-    monster_box.innerHTML = monsters
-    document.getElementsByClassName('math-box')[0].appendChild(monster_box)
+// function monsterBox(monsters) {
+//     mathBox()
+//     var monster_box = document.createElement('div')
+//     monster_box.classList.add('monster-box')
+//     monster_box.innerHTML = monsters
+//     document.getElementsByClassName('math-box')[0].appendChild(monster_box)
 
-}
+// }
 
-function itemBox(items) {
-    mathBox()
-    var item_box = document.createElement('div')
-    item_box.classList.add('item-box')
-    //    item_box.style.backgroundColor = 'gray';
-    item_box.innerHTML = items
-    document.getElementsByClassName('math-box')[0].appendChild(item_box)
-}
+// function itemBox(items) {
+//     mathBox()
+//     var item_box = document.createElement('div')
+//     item_box.classList.add('item-box')
+//     //    item_box.style.backgroundColor = 'gray';
+//     item_box.innerHTML = items
+//     document.getElementsByClassName('math-box')[0].appendChild(item_box)
+// }
 
-function insideMathBox(my_html,my_class) {
+function insideMathBox(my_html, my_class) {
     mathBox()
     var item_box = document.createElement('div')
     item_box.classList.add(my_class)
@@ -192,7 +203,7 @@ function httpGet(theUrl, params) {
     return xmlHttp.responseText
 }
 
-function link_decompose(collection, link_type) {
+function link_decompose(collection, link_type, hop_list) {
     // Get list of applicable links
     var hrefs = []
     for (var link = 0; link < collection.length; link++) {
@@ -230,10 +241,17 @@ function link_decompose(collection, link_type) {
         a.appendChild(text)
         a.title = 'Lookup ' + my_object.innerHTML + ' on 1xtramonkey'
         my_object.parentNode.insertBefore(a, my_object.nextSibling)
+        var my_content_chunk = getMyContentChunk(my_object)
+        var my_content_chunk_id = my_content_chunk.dataset.contentChunkId
+        if (!(my_content_chunk_id in Object.keys(hop_list))) {
+            pos = Object.keys(hop_list).length
+            hop_list[my_content_chunk.dataset.contentChunkId] = pos
+            my_content_chunk.id = pos
+        }
+        dict[my_object.href].parent_id.push(pos)
 
         // Gather parent content-chunk-id and return as linkable id
-        my_object.parentElement.id = my_object.parentElement.dataset.contentChunkId
-        dict[my_object.href].parent_id.push(my_object.parentElement.dataset.contentChunkId)
+
     }
     var names = Object()
     for (link in dict) {
@@ -253,7 +271,15 @@ function link_decompose(collection, link_type) {
         my_object.pretty_link.innerHTML = sorted_names[n]
         response.push(my_object)
     }
-    return response
+    return [response, hop_list]
+}
+
+function getMyContentChunk(ele) {
+    var my_content_chunk_id = ele.dataset.contentChunkId
+    if (typeof my_content_chunk_id == 'undefined') {
+        ele = getMyContentChunk(ele.parentElement)
+    }
+    return ele
 }
 
 function onlyUnique(value, index, self) {
