@@ -21,47 +21,71 @@ function onPageLoad() {
     if (item_links.length != 0) {
         catalogItems(item_links)
     }
+    if (spell_links.length !=0) {
+        catalogSpells(spell_links)
+    }
 
 };
 
-function catalogMonsters(monster_links) {
-    var monsters = ''
+function catalogMonsters(raw_a) {
+    var my_html = ''
     // var monsters_ = ''
-    var links = link_decompose(monster_links, 'monster')
+    var links = link_decompose(raw_a, 'monster')
     for (var link = 0; link < links.length; link++) {
         var my_link = links[link].pretty_link
         //        my_link.classList.add('monster-tooltip')
-        monsters = monsters + '<br/>' + my_link.outerHTML
+        my_html = my_html + '<br/>' + my_link.outerHTML
         for (var p = 0; p < links[link].parent_id.length; p++) {
             var a = document.createElement('a')
             a.href = "#" + links[link].parent_id[p]
             a.innerHTML = p + 1
-            monsters = monsters + ' ' + a.outerHTML
+            my_html = my_html + ' ' + a.outerHTML
         }
     }
-    console.log(monsters)
-    var param = {
-        method: 'store monster',
-        monsters: monsters
-    }
+    // console.log(my_html)
+    // var param = {
+    //     method: 'store monster',
+    //     monsters: my_html
+    // }
     // chrome.runtime.sendMessage(param)
-    monsterBox(monsters)
+    monsterBox(my_html)
 }
-function catalogItems(item_links) {
-    var items = ''
-    for (var link = 0; link < item_links.length; link++) {
-        if (items.includes(item_links[link].outerHTML) == false) {
-            items = items + '<br/>' + item_links[link].outerHTML //GAH! NEED TO USE DOM, for some reason fails as is
+function catalogItems(raw_a) {
+    var my_html = ''
+    // var monsters_ = ''
+    var links = link_decompose(raw_a, 'item')
+    for (var link = 0; link < links.length; link++) {
+        var my_link = links[link].pretty_link
+        //        my_link.classList.add('monster-tooltip')
+        my_html = my_html + '<br/>' + my_link.outerHTML
+        for (var p = 0; p < links[link].parent_id.length; p++) {
+            var a = document.createElement('a')
+            a.href = "#" + links[link].parent_id[p]
+            a.innerHTML = p + 1
+            my_html = my_html + ' ' + a.outerHTML
         }
     }
-    var param = {
-        method: 'store item',
-        items: items
-    }
-    chrome.runtime.sendMessage(param)
-    itemBox(items)
+    
+    itemBox(my_html)
 }
-
+function catalogSpells(raw_a) {
+    var my_html = ''
+    // var monsters_ = ''
+    var links = link_decompose(raw_a, 'spell')
+    for (var link = 0; link < links.length; link++) {
+        var my_link = links[link].pretty_link
+        //        my_link.classList.add('monster-tooltip')
+        my_html = my_html + '<br/>' + my_link.outerHTML
+        for (var p = 0; p < links[link].parent_id.length; p++) {
+            var a = document.createElement('a')
+            a.href = "#" + links[link].parent_id[p]
+            a.innerHTML = p + 1
+            my_html = my_html + ' ' + a.outerHTML
+        }
+    }
+    
+    insideMathBox(my_html,'spell-box')
+}
 function readDetails(details) {
     const og_url = document.querySelectorAll('[property="og:url"]')[0].outerHTML
     var names = document.getElementsByClassName("mon-stat-block__name-link")
@@ -148,6 +172,15 @@ function itemBox(items) {
     item_box.classList.add('item-box')
     //    item_box.style.backgroundColor = 'gray';
     item_box.innerHTML = items
+    document.getElementsByClassName('math-box')[0].appendChild(item_box)
+}
+
+function insideMathBox(my_html,my_class) {
+    mathBox()
+    var item_box = document.createElement('div')
+    item_box.classList.add(my_class)
+    //    item_box.style.backgroundColor = 'gray';
+    item_box.innerHTML = my_html
     document.getElementsByClassName('math-box')[0].appendChild(item_box)
 }
 
