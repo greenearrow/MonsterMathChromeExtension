@@ -1,33 +1,6 @@
 const xtraMonkeyHost = 'https://1xtramonkey.net'
 const alpha = 'abcdefghijklmnopqrstuvwxyz'
-function onPageLoad() {
-    const details = document.getElementsByClassName("more-info")
-    const article = document.getElementsByClassName('p-article')
-    const monster_links = document.getElementsByClassName("monster-tooltip")
-    const item_links = document.getElementsByClassName("magic-item-tooltip")
-    const spell_links = document.getElementsByClassName("spell-tooltip")
-    const mm_options = document.getElementsByClassName("MM-options")
-    var hop_list = Object()
-    if (mm_options.length != 0) {
-        console.log("I'm on my options page!")
-    }
-    if (details.length != 0) {
-        readDetails(details)
-    }
-    // if (article.length != 0) {
-    //     readDetails(article)
-    // }
-    if (monster_links.length != 0) {
-        hop_list = catalogMonsters(monster_links, hop_list)
-    }
-    if (item_links.length != 0) {
-        hop_list = catalogItems(item_links, hop_list)
-    }
-    if (spell_links.length != 0) {
-        hop_list = catalogSpells(spell_links, hop_list)
-    }
 
-};
 
 function catalogMonsters(raw_a, hop_list) {
     var my_html = ''
@@ -68,7 +41,7 @@ function catalogItems(raw_a, hop_list) {
         for (var p = 0; p < links[link].parent_id.length; p++) {
             var a = document.createElement('a')
             a.href = "#" + links[link].parent_id[p]
-            a.innerHTML = p + 1
+            a.innerHTML =links[link].parent_id[p]
             my_html = my_html + ' ' + a.outerHTML
         }
     }
@@ -89,7 +62,7 @@ function catalogSpells(raw_a, hop_list) {
         for (var p = 0; p < links[link].parent_id.length; p++) {
             var a = document.createElement('a')
             a.href = "#" + links[link].parent_id[p]
-            a.innerHTML = p + 1
+            a.innerHTML = links[link].parent_id[p]
             my_html = my_html + ' ' + a.outerHTML
         }
     }
@@ -233,7 +206,7 @@ function link_decompose(collection, link_type, hop_list) {
         dict[my_object.href].members.push(my_object)
 
         // Provide 1xtramonkey link 
-        var path = my_object.href.split('-').slice(1).join('-') // THIS IS BASED ON THE NON-KEYED NAME - TEXT ONLY, NOT LEADING NUMBER
+        var path = my_object.href.split('/').slice(-1)[0].split('-').slice(1).join('-') // THIS IS BASED ON THE NON-KEYED NAME - TEXT ONLY, NOT LEADING NUMBER
         var a = document.createElement('a');
         a.href = xtraMonkeyHost + '/' + link_type + '/' + path
         var text = document.createElement('SUP')
@@ -241,14 +214,21 @@ function link_decompose(collection, link_type, hop_list) {
         a.appendChild(text)
         a.title = 'Lookup ' + my_object.innerHTML + ' on 1xtramonkey'
         my_object.parentNode.insertBefore(a, my_object.nextSibling)
+
         var my_content_chunk = getMyContentChunk(my_object)
-        var my_content_chunk_id = my_content_chunk.dataset.contentChunkId
-        if (!(my_content_chunk_id in Object.keys(hop_list))) {
-            pos = Object.keys(hop_list).length
-            hop_list[my_content_chunk.dataset.contentChunkId] = pos
-            my_content_chunk.id = pos
-        }
-        dict[my_object.href].parent_id.push(pos)
+
+        try {
+            if (typeof my_content_chunk.id !== 'undefined') {
+                var my_content_chunk_id = my_content_chunk.id
+            }
+            else { var my_content_chunk_id = my_content_chunk.dataset.contentChunkId }
+            if (!(my_content_chunk_id in Object.keys(hop_list))) {
+                pos = Object.keys(hop_list).length
+                hop_list[my_content_chunk.dataset.contentChunkId] = pos
+                my_content_chunk.id = pos
+            }
+            dict[my_object.href].parent_id.push(pos)
+        } catch { console.log(my_object.innerHTML) }
 
         // Gather parent content-chunk-id and return as linkable id
 
@@ -275,11 +255,17 @@ function link_decompose(collection, link_type, hop_list) {
 }
 
 function getMyContentChunk(ele) {
-    var my_content_chunk_id = ele.dataset.contentChunkId
-    if (typeof my_content_chunk_id == 'undefined') {
-        ele = getMyContentChunk(ele.parentElement)
+    try {
+        var my_content_chunk_id = ele.id
+        if (my_content_chunk_id == '') {
+            var my_content_chunk_id = ele.dataset.contentChunkId
+            if (typeof my_content_chunk_id == 'undefined') {
+                ele = getMyContentChunk(ele.parentElement)
+            }
+        }
+    } catch { console.log(ele.innerHTML) } finally {
+        return ele
     }
-    return ele
 }
 
 function onlyUnique(value, index, self) {
@@ -307,5 +293,34 @@ function titleCase(string) {
 
     return sentence.join(" ");
 }
+
+function onPageLoad() {
+    const details = document.getElementsByClassName("more-info")
+    const article = document.getElementsByClassName('p-article')
+    const monster_links = document.getElementsByClassName("monster-tooltip")
+    const item_links = document.getElementsByClassName("magic-item-tooltip")
+    const spell_links = document.getElementsByClassName("spell-tooltip")
+    const mm_options = document.getElementsByClassName("MM-options")
+    var hop_list = Object()
+    if (mm_options.length != 0) {
+        console.log("I'm on my options page!")
+    }
+    if (details.length != 0) {
+        readDetails(details)
+    }
+    // if (article.length != 0) {
+    //     readDetails(article)
+    // }
+    if (monster_links.length != 0) {
+        hop_list = catalogMonsters(monster_links, hop_list)
+    }
+    if (item_links.length != 0) {
+        hop_list = catalogItems(item_links, hop_list)
+    }
+    if (spell_links.length != 0) {
+        hop_list = catalogSpells(spell_links, hop_list)
+    }
+
+};
 
 onPageLoad()
