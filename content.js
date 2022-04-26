@@ -296,7 +296,16 @@ function titleCase(string) {
 
     return sentence.join(" ");
 }
-
+/**
+ * Forces a reload of all stylesheets by appending a unique query string
+ * to each stylesheet URL.
+ */
+ function reloadStylesheets() {
+    var queryString = '?reload=' + new Date().getTime();
+    $('link[rel="stylesheet"]').each(function () {
+        this.href = this.href.replace(/\?.*|$/, queryString);
+    });
+}
 function onPageLoad() {
     const details = document.getElementsByClassName("more-info")
     const article = document.getElementsByClassName('p-article')
@@ -323,7 +332,7 @@ function onPageLoad() {
     if (spell_links.length != 0) {
         hop_list = catalogSpells(spell_links, hop_list)
     }
-
+    reloadStylesheets()
 };
 
 onPageLoad()
