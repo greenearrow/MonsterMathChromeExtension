@@ -41,7 +41,7 @@ function catalogItems(raw_a, hop_list) {
         for (var p = 0; p < links[link].parent_id.length; p++) {
             var a = document.createElement('a')
             a.href = "#" + links[link].parent_id[p]
-            a.innerHTML =links[link].parent_id[p]
+            a.innerHTML = links[link].parent_id[p]
             my_html = my_html + ' ' + a.outerHTML
         }
     }
@@ -72,10 +72,8 @@ function catalogSpells(raw_a, hop_list) {
 }
 function readDetails(details) {
     const og_url = document.querySelectorAll('[property="og:url"]')[0].outerHTML
-    var names = document.getElementsByClassName("mon-stat-block__name-link")
-    if (names.length != 0) {
-        var name = document.getElementsByClassName("mon-stat-block__name-link")[0].getAttribute("href").split("/")[2]
-    }
+    var names = document.querySelectorAll('[property="og:url"]')[0].content
+    var name = names.split("/").slice(-1)
     // } else {
     // var name = document.getElementsByClassName('Core-Styles_Chapter-Title')[0].innerHTML 
     // }
@@ -219,11 +217,16 @@ function link_decompose(collection, link_type, hop_list) {
 
         try {
             if (typeof my_content_chunk.id !== 'undefined') {
+                var id = true
                 var my_content_chunk_id = my_content_chunk.id
             }
-            else { var my_content_chunk_id = my_content_chunk.dataset.contentChunkId }
+            else {
+                var my_content_chunk_id = my_content_chunk.dataset.contentChunkId
+                var id = false
+            }
             if (!(my_content_chunk_id in Object.keys(hop_list))) {
-                pos = Object.keys(hop_list).length
+                if (id) {
+                pos = Object.keys(hop_list).length} // this is overwriting the id, so any existing links or javascript may fuck up
                 hop_list[my_content_chunk.dataset.contentChunkId] = pos
                 my_content_chunk.id = pos
             }
