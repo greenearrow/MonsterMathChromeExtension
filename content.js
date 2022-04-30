@@ -1,4 +1,5 @@
 const xtraMonkeyHost = 'https://1xtramonkey.net'
+//const xtraMonkeyHost = 'http://localhost'
 const alpha = 'abcdefghijklmnopqrstuvwxyz'
 
 
@@ -73,7 +74,10 @@ function catalogSpells(raw_a, hop_list) {
 function readDetails(details) {
     const og_url = document.querySelectorAll('[property="og:url"]')[0].outerHTML
     var names = document.querySelectorAll('[property="og:url"]')[0].content
-    var name = names.split("/").slice(-1)
+    var name = names.split("/").slice(-1)[0]
+    if (!(isNaN(name.split('-')[0]))) {
+        name = name.split('-').slice(1).join('-')
+    }
     // } else {
     // var name = document.getElementsByClassName('Core-Styles_Chapter-Title')[0].innerHTML 
     // }
@@ -118,7 +122,7 @@ function printRandomEncounter(monster) {
                     level: avg_level["avg_level"]
 
                 }
-                var encounter = httpGet('http://localhost:8080/api/party-up/' + monster, params)
+                var encounter = httpGet(xtraMonkeyHost + '/api/party-up/' + monster, params)
                 var encounter_ele = document.createElement('div')
                 encounter_ele.innerHTML = encounter
                 document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
@@ -169,7 +173,8 @@ function insideMathBox(my_html, my_class) {
 function httpGet(theUrl, params) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open("POST", theUrl, false);
-    // xmlHttp.setRequestHeader()
+    // xmlHttp.setRequestHeader('Access-Control-Allow-Origin','*')
+    // xmlHttp.setRequestHeader('Access-Control-Allow-Methods')
     xmlHttp.send(JSON.stringify(params));
     return xmlHttp.responseText
 }
@@ -204,7 +209,10 @@ function link_decompose(collection, link_type, hop_list) {
         dict[my_object.href].members.push(my_object)
 
         // Provide 1xtramonkey link 
-        var path = my_object.href.split('/').slice(-1)[0].split('-').slice(1).join('-') // THIS IS BASED ON THE NON-KEYED NAME - TEXT ONLY, NOT LEADING NUMBER
+        var id = my_object.href.split('/').slice(-1)[0]
+        if (!(isNaN(id.split('-')[0]))) {
+            var path = id.split('-').slice(1).join('-') // THIS IS BASED ON THE NON-KEYED NAME - TEXT ONLY, NOT LEADING NUMBER
+        } else {var path = id}
         var a = document.createElement('a');
         a.href = xtraMonkeyHost + '/' + link_type + '/' + path
         var text = document.createElement('SUP')
@@ -226,7 +234,8 @@ function link_decompose(collection, link_type, hop_list) {
             }
             if (!(my_content_chunk_id in Object.keys(hop_list))) {
                 if (id) {
-                pos = Object.keys(hop_list).length} // this is overwriting the id, so any existing links or javascript may fuck up
+                    pos = Object.keys(hop_list).length
+                } // this is overwriting the id, so any existing links or javascript may fuck up
                 hop_list[my_content_chunk.dataset.contentChunkId] = pos
                 my_content_chunk.id = pos
             }
@@ -300,7 +309,7 @@ function titleCase(string) {
  * Forces a reload of all stylesheets by appending a unique query string
  * to each stylesheet URL.
  */
- function reloadStylesheets() {
+function reloadStylesheets() {
     var queryString = '?reload=' + new Date().getTime();
     $('link[rel="stylesheet"]').each(function () {
         this.href = this.href.replace(/\?.*|$/, queryString);
@@ -332,7 +341,7 @@ function onPageLoad() {
     if (spell_links.length != 0) {
         hop_list = catalogSpells(spell_links, hop_list)
     }
-    reloadStylesheets()
+    //reloadStylesheets()
 };
 
 onPageLoad()
