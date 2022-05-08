@@ -76,13 +76,17 @@ function readDetails(details) {
     var names = document.querySelectorAll('[property="og:url"]')[0].content
     var name = names.split("/").slice(-1)[0]
     if (!(isNaN(name.split('-')[0]))) {
+        var id = name.split('-')[0]
         name = name.split('-').slice(1).join('-')
-    }
+    } else { var id = '' }
     // } else {
     // var name = document.getElementsByClassName('Core-Styles_Chapter-Title')[0].innerHTML 
     // }
     var param1 = name
-    var key = name
+    if (!(id == '-')) {
+        var key = name + '-' + id
+    } else { var key = name }
+
     start_text = "<!DOCTYPE html><html>" + og_url + "<head></head><body>"
     end_text = "</body></html>"
     chrome.storage.local.get(key, function (val) {
@@ -91,7 +95,7 @@ function readDetails(details) {
             var details_html = start_text + details[0].outerHTML + end_text
             var blob = new Blob([details_html], { type: "text/html" })
             var url = URL.createObjectURL(blob)
-            var filename = name + '.html'
+            var filename = key + '.html'
             var param = {
                 method: 'download',
                 collection: url,
@@ -102,10 +106,11 @@ function readDetails(details) {
             label.innerHTML = 'Downloaded!'
             document.getElementsByClassName("page-title")[0].appendChild(label)
             // Append value of param1
-            console.log(param1)
-            val[key] = param1;
+            console.log(key)
+            val[key] = key;
             // Save data
-            chrome.storage.local.set(val);
+            chrome.storage.local.set(val)
+            console.log('stored ' + key);
         }
         else { printRandomEncounter(name) };
     });
@@ -212,7 +217,7 @@ function link_decompose(collection, link_type, hop_list) {
         var id = my_object.href.split('/').slice(-1)[0]
         if (!(isNaN(id.split('-')[0]))) {
             var path = id.split('-').slice(1).join('-') // THIS IS BASED ON THE NON-KEYED NAME - TEXT ONLY, NOT LEADING NUMBER
-        } else {var path = id}
+        } else { var path = id }
         var a = document.createElement('a');
         a.href = xtraMonkeyHost + '/' + link_type + '/' + path
         var text = document.createElement('SUP')
@@ -316,12 +321,15 @@ function reloadStylesheets() {
     });
 }
 function onPageLoad() {
-    const details = document.getElementsByClassName("more-info")
-    const article = document.getElementsByClassName('p-article')
-    const monster_links = document.getElementsByClassName("monster-tooltip")
-    const item_links = document.getElementsByClassName("magic-item-tooltip")
-    const spell_links = document.getElementsByClassName("spell-tooltip")
-    const mm_options = document.getElementsByClassName("MM-options")
+    const details = document.getElementsByClassName("more-info") // identifies monster stat block pages (and maybe also spell and magic item pages, but not supported yet)
+    const article = document.getElementsByClassName('p-article') // future - strip articles
+    const monster_links = document.getElementsByClassName("monster-tooltip") // looks for all monsters listed
+    const item_links = document.getElementsByClassName("magic-item-tooltip") // looks for all magic items listed
+    const spell_links = document.getElementsByClassName("spell-tooltip") // looks for all spells listed
+    const mm_options = document.getElementsByClassName("MM-options") // Extension Options page identification
+    const monster_search_form = document.getElementsById('monster-search-form')
+    const my_url = document.location.href
+    const my_params = new URLSearchParams(document.location.search)
     var hop_list = Object()
     if (mm_options.length != 0) {
         console.log("I'm on my options page!")
