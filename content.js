@@ -216,7 +216,8 @@ function link_decompose(collection, link_type, hop_list) {
         // Provide 1xtramonkey link 
         var id = my_object.href.split('/').slice(-1)[0]
         if (!(isNaN(id.split('-')[0]))) {
-            var path = id.split('-').slice(1).join('-') // THIS IS BASED ON THE NON-KEYED NAME - TEXT ONLY, NOT LEADING NUMBER
+            var path = id.split('-').slice(1).join('-') // THIS IS BASED ON THE NON-KEYED NAME - TEXT ONLY, NOT LEADING NUMBER 
+            //change this to take name-id instead of name only. 
         } else { var path = id }
         var a = document.createElement('a');
         a.href = xtraMonkeyHost + '/' + link_type + '/' + path
@@ -327,10 +328,16 @@ function onPageLoad() {
     const item_links = document.getElementsByClassName("magic-item-tooltip") // looks for all magic items listed
     const spell_links = document.getElementsByClassName("spell-tooltip") // looks for all spells listed
     const mm_options = document.getElementsByClassName("MM-options") // Extension Options page identification
-    const monster_search_form = document.getElementsById('monster-search-form')
+    const monster_search_form = document.getElementById('monster-search-form')
     const my_url = document.location.href
     const my_params = new URLSearchParams(document.location.search)
     var hop_list = Object()
+    const
+        keys = my_Params.keys(),
+        values = my_Params.values(),
+        entries = my_Params.entries();
+
+    for (const key of keys) console.log(key);
     if (mm_options.length != 0) {
         console.log("I'm on my options page!")
     }
