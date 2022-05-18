@@ -331,13 +331,14 @@ function onPageLoad() {
     const monster_search_form = document.getElementById('monster-search-form')
     const my_url = document.location.href
     const my_params = new URLSearchParams(document.location.search)
+    const listing = document.getElementsByClassName('listing')
     var hop_list = Object()
-    const
-        keys = my_Params.keys(),
-        values = my_Params.values(),
-        entries = my_Params.entries();
+    // const
+    //     keys = my_Params.keys(),
+    //     values = my_Params.values(),
+    //     entries = my_Params.entries();
 
-    for (const key of keys) console.log(key);
+    // for (const key of keys) console.log(key);
     if (mm_options.length != 0) {
         console.log("I'm on my options page!")
     }
