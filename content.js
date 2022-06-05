@@ -334,9 +334,9 @@ function onPageLoad() {
     const listing = document.getElementsByClassName('listing')
     var hop_list = Object()
     // const
-    //     keys = my_Params.keys(),
-    //     values = my_Params.values(),
-    //     entries = my_Params.entries();
+    //     keys = my_params.keys(),
+    //     values = my_params.values(),
+    //     entries = my_params.entries();
 
     // for (const key of keys) console.log(key);
     if (mm_options.length != 0) {
