@@ -6,22 +6,28 @@
 </head>
 
 <body onload="load_options()">
-    <form id="party" class="MM-options">
-        <label for="num_chars">Number of Characters:<label><br>
-                <input type="text" id="num_chars" name="num_chars"><br>
-                <label for="avg_level">Average Level</label><br>
-                <input type="text" id="avg_level" name="avg_level"><br>
-                <label for="difficulty">Difficulty</label><br>
-                <select id="difficulty" name="difficulty">
-                    <option value="Easy">Easy</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Hard">Hard</option>
-                    <option value="Deadly">Deadly</option>
-                </select>
-    </form>
-    <br />
-    <button id='btn_set'>Set</button>
+    <div id="settings">
+        <form id="party" class="MM-options">
+            <label for="num_chars">Number of Characters:<label><br>
+                    <input type="text" id="num_chars" name="num_chars"><br>
+                    <label for="avg_level">Average Level</label><br>
+                    <input type="text" id="avg_level" name="avg_level"><br>
+                    <label for="difficulty">Difficulty</label><br>
+                    <select id="difficulty" name="difficulty">
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                        <option value="Deadly">Deadly</option>
+                    </select>
+        </form>
+        <br />
 
+        <button id='btn_set'>Set</button>
+    </div>
+    <div>
+        <br />
+        <button id='btn_reset'>Reset</button>
+    </div>
     <script src='options.js'></script>
 </body>
 

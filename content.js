@@ -5,13 +5,11 @@ const alpha = 'abcdefghijklmnopqrstuvwxyz'
 
 function catalogMonsters(raw_a, hop_list) {
     var my_html = ''
-    // var monsters_ = ''
     var temp = link_decompose(raw_a, 'monster', hop_list)
     var links = temp[0]
     hop_list = temp[1]
     for (var link = 0; link < links.length; link++) {
         var my_link = links[link].pretty_link
-        //        my_link.classList.add('monster-tooltip')
         my_html = my_html + '<br/>' + my_link.outerHTML
         for (var p = 0; p < links[link].parent_id.length; p++) {
             var a = document.createElement('a')
@@ -31,13 +29,11 @@ function catalogMonsters(raw_a, hop_list) {
 }
 function catalogItems(raw_a, hop_list) {
     var my_html = ''
-    // var monsters_ = ''
     var temp = link_decompose(raw_a, 'item', hop_list)
     var links = temp[0]
     hop_list = temp[1]
     for (var link = 0; link < links.length; link++) {
         var my_link = links[link].pretty_link
-        //        my_link.classList.add('monster-tooltip')
         my_html = my_html + '<br/>' + my_link.outerHTML
         for (var p = 0; p < links[link].parent_id.length; p++) {
             var a = document.createElement('a')
@@ -52,7 +48,6 @@ function catalogItems(raw_a, hop_list) {
 }
 function catalogSpells(raw_a, hop_list) {
     var my_html = ''
-    // var monsters_ = ''
     var temp = link_decompose(raw_a, 'spell', hop_list)
     var links = temp[0]
     hop_list = temp[1]
@@ -148,23 +143,6 @@ function mathBox() {
     }
 }
 
-// function monsterBox(monsters) {
-//     mathBox()
-//     var monster_box = document.createElement('div')
-//     monster_box.classList.add('monster-box')
-//     monster_box.innerHTML = monsters
-//     document.getElementsByClassName('math-box')[0].appendChild(monster_box)
-
-// }
-
-// function itemBox(items) {
-//     mathBox()
-//     var item_box = document.createElement('div')
-//     item_box.classList.add('item-box')
-//     //    item_box.style.backgroundColor = 'gray';
-//     item_box.innerHTML = items
-//     document.getElementsByClassName('math-box')[0].appendChild(item_box)
-// }
 
 function insideMathBox(my_html, my_class) {
     mathBox()
@@ -348,15 +326,15 @@ function onPageLoad() {
     // if (article.length != 0) {
     //     readDetails(article)
     // }
-    if (monster_links.length != 0) {
-        hop_list = catalogMonsters(monster_links, hop_list)
-    }
-    if (item_links.length != 0) {
-        hop_list = catalogItems(item_links, hop_list)
-    }
-    if (spell_links.length != 0) {
-        hop_list = catalogSpells(spell_links, hop_list)
-    }
+    // if (monster_links.length != 0) {
+    //     hop_list = catalogMonsters(monster_links, hop_list)
+    // }
+    // if (item_links.length != 0) {
+    //     hop_list = catalogItems(item_links, hop_list)
+    // }
+    // if (spell_links.length != 0) {
+    //     hop_list = catalogSpells(spell_links, hop_list)
+    // }
     //reloadStylesheets()
 };
 
