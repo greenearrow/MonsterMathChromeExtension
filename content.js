@@ -294,6 +294,45 @@ function reloadStylesheets() {
         this.href = this.href.replace(/\?.*|$/, queryString);
     });
 }
+
+function exportSourcePage(container, header, title, my_url) {
+    title = title.replace(' - Sources - D&D Beyond', "")
+    start_text = "<!DOCTYPE html><html><head><title>" + title + "</title></head><body>"
+    end_text = "</body></html>"
+    var header_txt = ''
+    for (const item of header) {
+        header_txt += item.outerHTML
+    }
+    var container_txt = ''
+    for (const item of container) {
+        container_txt += item.outerHTML
+    }
+
+    //    chrome.storage.local.get(key, function (val) {
+    // Create property if does not exist (yet)
+    // if (typeof val[key] != 'string') {
+    var details_html = start_text + header_txt + container_txt + end_text
+    var blob = new Blob([details_html], { type: "text/html" })
+    var url = URL.createObjectURL(blob)
+    var filename = my_url.replace('https://www.dndbeyond.com/sources/', '').replace('/', '_') + '.html'
+    var param = {
+        method: 'download',
+        collection: url,
+        filename: filename
+    }
+    chrome.runtime.sendMessage(param)
+    // let label = document.createElement("p");
+    // label.innerHTML = 'Downloaded!'
+    // document.getElementsByClassName("page-title")[0].appendChild(label)
+    // Append value of param1
+    // console.log(key)
+    // val[key] = key;
+    // Save data
+    // chrome.storage.local.set(val)
+    // console.log('stored ' + key);
+    // };
+    //    });
+}
 function onPageLoad() {
     const details = document.getElementsByClassName("more-info") // identifies monster stat block pages (and maybe also spell and magic item pages, but not supported yet)
     const article = document.getElementsByClassName('p-article') // future - strip articles
@@ -307,6 +346,7 @@ function onPageLoad() {
     const my_url = document.location.href
     const my_params = new URLSearchParams(document.location.search)
     const listing = document.getElementsByClassName('listing')
+    const title = document.title
     var hop_list = Object()
     // const
     //     keys = my_params.keys(),
@@ -314,6 +354,9 @@ function onPageLoad() {
     //     entries = my_params.entries();
 
     // for (const key of keys) console.log(key);
+    if ('www.dndbeyond.com' == document.location.href.split('/')[2] & 'sources' == document.location.href.split('/')[3]) {
+        exportSourcePage(container, header, title, my_url)
+    }
     if (mm_options.length != 0) {
         console.log("I'm on my options page!")
     }
