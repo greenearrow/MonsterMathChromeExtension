@@ -18,12 +18,7 @@ function catalogMonsters(raw_a, hop_list) {
             my_html = my_html + ' ' + a.outerHTML
         }
     }
-    // console.log(my_html)
-    // var param = {
-    //     method: 'store monster',
-    //     monsters: my_html
-    // }
-    // chrome.runtime.sendMessage(param)
+
     insideMathBox(my_html, 'monster-box')
     return hop_list
 }
@@ -194,7 +189,7 @@ function link_decompose(collection, link_type, hop_list) {
         // Provide 1xtramonkey link 
         var id = my_object.href.split('/').slice(-1)[0]
         if (!(isNaN(id.split('-')[0]))) {
-            var path = id.split('-').slice(1).join('-') // THIS IS BASED ON THE NON-KEYED NAME - TEXT ONLY, NOT LEADING NUMBER 
+            var path = id //.split('-').slice(1).join('-') // THIS IS BASED ON THE NON-KEYED NAME - TEXT ONLY, NOT LEADING NUMBER 
             //change this to take name-id instead of name only. 
         } else { var path = id }
         var a = document.createElement('a');
@@ -302,6 +297,8 @@ function reloadStylesheets() {
 function onPageLoad() {
     const details = document.getElementsByClassName("more-info") // identifies monster stat block pages (and maybe also spell and magic item pages, but not supported yet)
     const article = document.getElementsByClassName('p-article') // future - strip articles
+    const header = document.getElementsByClassName("page-header")
+    const container = document.getElementsByClassName("container")
     const monster_links = document.getElementsByClassName("monster-tooltip") // looks for all monsters listed
     const item_links = document.getElementsByClassName("magic-item-tooltip") // looks for all magic items listed
     const spell_links = document.getElementsByClassName("spell-tooltip") // looks for all spells listed
