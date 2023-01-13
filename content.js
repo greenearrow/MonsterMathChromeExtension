@@ -92,9 +92,9 @@ function readDetails(details) {
                 filename: filename
             }
             chrome.runtime.sendMessage(param)
-            let label = document.createElement("p");
-            label.innerHTML = 'Downloaded!'
-            document.getElementsByClassName("page-title")[0].appendChild(label)
+            // let label = document.createElement("p");
+            // label.innerHTML = 'Downloaded!'
+            // document.getElementsByClassName("page-title")[0].appendChild(label)
             // Append value of param1
             console.log(key)
             val[key] = key;
@@ -102,7 +102,8 @@ function readDetails(details) {
             chrome.storage.local.set(val)
             console.log('stored ' + key);
         }
-        else { printRandomEncounter(name) };
+        else { console.log(name + ' already downloaded') }
+        // else { printRandomEncounter(id+'-'+name) };
     });
 }
 
