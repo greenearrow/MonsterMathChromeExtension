@@ -296,7 +296,7 @@ function reloadStylesheets() {
     });
 }
 
-function exportSourcePage(container, header, title, my_url) {
+function exportSourcePage(containers, header, title, my_url) {
     title = title.replace(' - Sources - D&D Beyond', "")
     start_text = "<!DOCTYPE html><html><head><title>" + title + "</title></head><body>"
     end_text = "</body></html>"
@@ -305,8 +305,18 @@ function exportSourcePage(container, header, title, my_url) {
         header_txt += item.outerHTML
     }
     var container_txt = ''
-    for (const item of container) {
+    var img_arr = []
+    for (const item of containers) {
         container_txt += item.outerHTML
+        for (const image of item.getElementsByTagName('img')) {
+
+            downloadImage(image.src, image.src.replace('https://www.dndbeyond.com/', ''))
+            if (image.parentElement.hasAttribute('href')) {
+                href = image.parentElement.href
+                downloadImage(href, href.replace('https://www.dndbeyond.com/',''))
+            }
+
+        }
     }
 
     //    chrome.storage.local.get(key, function (val) {
@@ -334,6 +344,20 @@ function exportSourcePage(container, header, title, my_url) {
     // };
     //    });
 }
+
+async function downloadImage(imageSrc, filename) { //I imagine this will need to go into background, which will ruin it, but who knows, it may work.
+    const image = await fetch(imageSrc)
+    const imageBlog = await image.blob()
+    const imageURL = URL.createObjectURL(imageBlog)
+
+    const link = document.createElement('a')
+    link.href = imageURL
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+}
+
 function onPageLoad() {
     const details = document.getElementsByClassName("more-info") // identifies monster stat block pages (and maybe also spell and magic item pages, but not supported yet)
     const article = document.getElementsByClassName('p-article') // future - strip articles
