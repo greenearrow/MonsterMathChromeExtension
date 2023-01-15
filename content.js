@@ -306,42 +306,47 @@ function exportSourcePage(containers, header, title, my_url) {
     }
     var container_txt = ''
     var img_arr = []
-    for (const item of containers) {
-        container_txt += item.outerHTML
-        for (const image of item.getElementsByTagName('img')) {
 
-            downloadImage(image.src, image.src.replace('https://www.dndbeyond.com/', ''))
-            if (image.parentElement.hasAttribute('href')) {
-                href = image.parentElement.href
-                downloadImage(href, href.replace('https://www.dndbeyond.com/',''))
+
+    key = my_url.replace('https://www.dndbeyond.com/sources/', '').replace('/', '_')
+    chrome.storage.local.get(key, function (val) {
+        // Create property if does not exist (yet)
+        if (typeof val[key] != 'string') {
+            for (const item of containers) {
+                container_txt += item.innerHTML
+                for (const image of item.getElementsByTagName('img')) {
+
+                    downloadImage(image.src, image.src.replace('https://www.dndbeyond.com/', ''))
+                    if (image.parentElement.hasAttribute('href')) {
+                        href = image.parentElement.href
+                        if (href != image.src) {
+                            downloadImage(href, href.replace('https://www.dndbeyond.com/', ''))
+                        }
+                    }
+                }
             }
-
+            var details_html = start_text + header_txt + container_txt + end_text
+            details_html = details_html.replace('https://www.dndbeyond.com', '')
+            var blob = new Blob([details_html], { type: "text/html" })
+            var url = URL.createObjectURL(blob)
+            var filename = my_url.replace('https://www.dndbeyond.com/sources/', '').replace('/', '_') + '.html'
+            var param = {
+                method: 'download',
+                collection: url,
+                filename: filename
+            }
+            chrome.runtime.sendMessage(param)
+            // let label = document.createElement("p");
+            // label.innerHTML = 'Downloaded!'
+            // document.getElementsByClassName("page-title")[0].appendChild(label)
+            // Append value of param1
+            // console.log(key)
+            val[key] = key;
+            // Save data
+            chrome.storage.local.set(val)
+            // console.log('stored ' + key);
         }
-    }
-
-    //    chrome.storage.local.get(key, function (val) {
-    // Create property if does not exist (yet)
-    // if (typeof val[key] != 'string') {
-    var details_html = start_text + header_txt + container_txt + end_text
-    var blob = new Blob([details_html], { type: "text/html" })
-    var url = URL.createObjectURL(blob)
-    var filename = my_url.replace('https://www.dndbeyond.com/sources/', '').replace('/', '_') + '.html'
-    var param = {
-        method: 'download',
-        collection: url,
-        filename: filename
-    }
-    chrome.runtime.sendMessage(param)
-    // let label = document.createElement("p");
-    // label.innerHTML = 'Downloaded!'
-    // document.getElementsByClassName("page-title")[0].appendChild(label)
-    // Append value of param1
-    // console.log(key)
-    // val[key] = key;
-    // Save data
-    // chrome.storage.local.set(val)
-    // console.log('stored ' + key);
-    // };
+    });
     //    });
 }
 
