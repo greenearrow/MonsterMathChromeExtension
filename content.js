@@ -21,7 +21,7 @@ function catalogMonsters(raw_a, hop_list) {
 
     insideMathBox(my_html, 'monster-box')
     return hop_list
-}
+};
 function catalogItems(raw_a, hop_list) {
     var my_html = ''
     var temp = link_decompose(raw_a, 'item', hop_list)
@@ -40,7 +40,7 @@ function catalogItems(raw_a, hop_list) {
 
     insideMathBox(my_html, 'item-box')
     return hop_list
-}
+};
 function catalogSpells(raw_a, hop_list) {
     var my_html = ''
     var temp = link_decompose(raw_a, 'spell', hop_list)
@@ -60,7 +60,7 @@ function catalogSpells(raw_a, hop_list) {
 
     insideMathBox(my_html, 'spell-box')
     return hop_list
-}
+};
 function readDetails(details) {
     const og_url = document.querySelectorAll('[property="og:url"]')[0].outerHTML
     var names = document.querySelectorAll('[property="og:url"]')[0].content
@@ -105,7 +105,7 @@ function readDetails(details) {
         else { console.log(name + ' already downloaded') }
         // else { printRandomEncounter(id+'-'+name) };
     });
-}
+};
 
 function printRandomEncounter(monster) {
     chrome.storage.local.get(['difficulty'], function (difficulty) {
@@ -118,7 +118,7 @@ function printRandomEncounter(monster) {
                     level: avg_level["avg_level"]
 
                 }
-                var encounter = httpGet(xtraMonkeyHost + '/api/party-up/' + monster, params)
+                var encounter = httpPost(xtraMonkeyHost + '/api/party-up/' + monster, params)
                 var encounter_ele = document.createElement('div')
                 encounter_ele.innerHTML = encounter
                 document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
@@ -127,7 +127,7 @@ function printRandomEncounter(monster) {
         })
     })
 
-}
+};
 
 function mathBox() {
     if (document.getElementsByClassName('math-box'.len == 0)) {
@@ -137,7 +137,7 @@ function mathBox() {
 
         main_content_container.appendChild(math_box)
     }
-}
+};
 
 
 function insideMathBox(my_html, my_class) {
@@ -147,16 +147,16 @@ function insideMathBox(my_html, my_class) {
     //    item_box.style.backgroundColor = 'gray';
     item_box.innerHTML = my_html
     document.getElementsByClassName('math-box')[0].appendChild(item_box)
-}
+};
 
-function httpGet(theUrl, params) {
+function httpPost(theUrl, params) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open("POST", theUrl, false);
     // xmlHttp.setRequestHeader('Access-Control-Allow-Origin','*')
     // xmlHttp.setRequestHeader('Access-Control-Allow-Methods')
     xmlHttp.send(JSON.stringify(params));
     return xmlHttp.responseText
-}
+};
 
 function link_decompose(collection, link_type, hop_list) {
     // Get list of applicable links
@@ -244,6 +244,10 @@ function link_decompose(collection, link_type, hop_list) {
         response.push(my_object)
     }
     return [response, hop_list]
+};
+
+function remove_from_storage(key) {
+    chrome.local.storage.remove(key)
 }
 
 function getMyContentChunk(ele) {
@@ -258,11 +262,11 @@ function getMyContentChunk(ele) {
     } catch { console.log(ele.innerHTML) } finally {
         return ele
     }
-}
+};
 
 function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
-}
+};
 
 function returnShortest(value) {
     var response = []
@@ -275,7 +279,7 @@ function returnShortest(value) {
         }
     }
     return response
-}
+};
 
 function titleCase(string) {
     var sentence = string.toLowerCase().split(" ");
@@ -284,7 +288,7 @@ function titleCase(string) {
     }
 
     return sentence.join(" ");
-}
+};
 /**
  * Forces a reload of all stylesheets by appending a unique query string
  * to each stylesheet URL.
@@ -294,7 +298,7 @@ function reloadStylesheets() {
     $('link[rel="stylesheet"]').each(function () {
         this.href = this.href.replace(/\?.*|$/, queryString);
     });
-}
+};
 
 function exportSourcePage(containers, header, title, my_url) {
     title = title.replace(' - Sources - D&D Beyond', "")
@@ -308,12 +312,17 @@ function exportSourcePage(containers, header, title, my_url) {
     var img_arr = []
 
 
-    key = my_url.replace('https://www.dndbeyond.com/sources/', '').replace('/', '_')
+    key = my_url.replace('https://www.dndbeyond.com/sources/', '').replace('/', '_').split('#')[0]
+
     chrome.storage.local.get(key, function (val) {
         // Create property if does not exist (yet)
         if (typeof val[key] != 'string') {
             for (const item of containers) {
-                container_txt += item.innerHTML
+                let script_ele = item.getElementsByTagName('script')
+                // for (ele of script_ele) {
+                //     ele.remove() //This may remove all scripts from the page AS YOU ARE ATTEMPTING TO USE IT
+                // }
+                container_txt += item.outerHTML
                 for (const image of item.getElementsByTagName('img')) {
 
                     downloadImage(image.src, image.src.replace('https://www.dndbeyond.com/', ''))
@@ -347,8 +356,12 @@ function exportSourcePage(containers, header, title, my_url) {
             // console.log('stored ' + key);
         }
     });
+    // let button = document.createElement('button')
+    // button.fun = function () { remove_from_storage(key) }
+    // button.innerText = "Clear from memory"
+    // header[0].appendChild(button)
     //    });
-}
+};
 
 async function downloadImage(imageSrc, filename) { //I imagine this will need to go into background, which will ruin it, but who knows, it may work.
     const image = await fetch(imageSrc)
@@ -361,7 +374,7 @@ async function downloadImage(imageSrc, filename) { //I imagine this will need to
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-}
+};
 
 function onPageLoad() {
     const details = document.getElementsByClassName("more-info") // identifies monster stat block pages (and maybe also spell and magic item pages, but not supported yet)

@@ -6,7 +6,7 @@
   "content_scripts": [
     {
       "matches": [
-        "<all_urls>"
+        "https://www.dndbeyond.com/*"
       ],
       "js": [
         "content.js"
