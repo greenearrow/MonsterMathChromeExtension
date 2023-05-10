@@ -21,16 +21,25 @@
                     </select>
         </form>
         <br />
-
+        <div>
+            <br />
+            <form id="settings" class="MM-options">
+                <label for="download_toggle">Download function</label><br>
+                <select id="download_toggle" name="download_toggle">
+                    <option value="on">On</option>
+                    <option value="off">Off</option>
+                </select><br />
+                <label for="index_toggle">Index function</label><br>
+                <select id="index_toggle" name="index_toggle">
+                    <option value="on">On</option>
+                    <option value="off">Off</option>
+                </select>
+            </form>
+        </div>
         <button id='btn_set'>Set</button>
     </div>
-    <div>
-        <br />
-        <label class="switch">
-            <input type="checkbox" id="download_toggle">
-            <span class="slider"></span>
-          </label>
-    </div>
+
+
     <div>
         <br />
         <button id='btn_reset'>Reset</button>

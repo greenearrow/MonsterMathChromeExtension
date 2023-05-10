@@ -3,10 +3,12 @@ function save_options() {
     var avg_level = document.getElementById('avg_level').value
     var difficulty = document.getElementById('difficulty').value
     var download_toggle = document.getElementById('download_toggle').value
+    var index_toggle = document.getElementById('index_toggle').value
     chrome.storage.local.set({ num_chars: num_chars });
     chrome.storage.local.set({ avg_level: avg_level });
     chrome.storage.local.set({ difficulty: difficulty });
     chrome.storage.local.set({ download_toggle: download_toggle });
+    chrome.storage.local.set({ index_toggle: index_toggle });
 }
 
 function load_options() {
@@ -35,6 +37,13 @@ function load_options() {
             download_toggle['download_toggle'] = 'off'
         }
         document.getElementById('download_toggle').value = download_toggle['download_toggle']
+    })
+    chrome.storage.local.get(['index_toggle'], function (index_toggle) {
+        if (typeof index_toggle['index_toggle'] != "string") {
+            chrome.storage.local.set({ index_toggle: 'off' })
+            index_toggle['index_toggle'] = 'off'
+        }
+        document.getElementById('index_toggle').value = index_toggle['index_toggle']
     })
 }
 

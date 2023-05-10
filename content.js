@@ -397,28 +397,42 @@ function onPageLoad() {
         entries = my_params.entries();
 
     for (const key of keys) console.log(key);
-    if ('www.dndbeyond.com' == document.location.href.split('/')[2] & 'sources' == document.location.href.split('/')[3]) {
-        exportSourcePage(container, header, title, my_url)
-    }
+    chrome.storage.local.get(['download_toggle'], function (download_toggle) {
+
+
+        if (download_toggle['download_toggle'] == 'on') {
+            if ('www.dndbeyond.com' == document.location.href.split('/')[2] & 'sources' == document.location.href.split('/')[3]) {
+                exportSourcePage(container, header, title, my_url)
+            }
+            if (details.length != 0) {
+                readDetails(details)
+            }
+            // if (article.length != 0) {
+            //     readDetails(article)
+            // }
+
+        }
+
+    })
     if (mm_options.length != 0) {
         console.log("I'm on my options page!")
     }
-    if (details.length != 0) {
-        readDetails(details)
-    }
-    if (article.length != 0) {
-        readDetails(article)
-    }
-    if (monster_links.length != 0) {
-        hop_list = catalogMonsters(monster_links, hop_list)
-    }
-    if (item_links.length != 0) {
-        hop_list = catalogItems(item_links, hop_list)
-    }
-    if (spell_links.length != 0) {
-        hop_list = catalogSpells(spell_links, hop_list)
-    }
-    reloadStylesheets()
+    chrome.storage.local.get(['index_toggle'], function (index_toggle) {
+        if (index_toggle['index_toggle'] == 'on') {
+            if (monster_links.length != 0) {
+                hop_list = catalogMonsters(monster_links, hop_list)
+            }
+            if (item_links.length != 0) {
+                hop_list = catalogItems(item_links, hop_list)
+            }
+            if (spell_links.length != 0) {
+                hop_list = catalogSpells(spell_links, hop_list)
+            }
+            reloadStylesheets()
+        }
+    })
+
+
 };
 
 onPageLoad()
