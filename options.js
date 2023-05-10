@@ -2,21 +2,40 @@ function save_options() {
     var num_chars = document.getElementById('num_chars').value
     var avg_level = document.getElementById('avg_level').value
     var difficulty = document.getElementById('difficulty').value
+    var download_toggle = document.getElementById('download_toggle').value
     chrome.storage.local.set({ num_chars: num_chars });
     chrome.storage.local.set({ avg_level: avg_level });
     chrome.storage.local.set({ difficulty: difficulty });
+    chrome.storage.local.set({ download_toggle: download_toggle });
 }
 
 function load_options() {
     chrome.storage.local.get(['difficulty'], function (difficulty) {
-        chrome.storage.local.get(['num_chars'], function (num_chars) {
-            chrome.storage.local.get(['avg_level'], function (avg_level) {
-                document.getElementById('num_chars').value = num_chars['num_chars']
-                document.getElementById('difficulty').value = difficulty['difficulty']
-                document.getElementById('avg_level').value = avg_level['avg_level']
-            })
-        })
+        if (typeof difficulty['difficulty'] != 'string') {
+            chrome.storage.local.set({ difficulty: 'Medium' })
+        };
+        document.getElementById('difficulty').value = difficulty['difficulty']
     });
+    chrome.storage.local.get(['num_chars'], function (num_chars) {
+        if (typeof num_chars['num_chars'] != 'string') {
+            chrome.storage.local.set({ num_chars: 4 })
+        };
+        document.getElementById('num_chars').value = num_chars['num_chars']
+    })
+    chrome.storage.local.get(['avg_level'], function (avg_level) {
+        if (typeof avg_level['avg_level'] != 'string') {
+            chrome.storage.local.set({ avg_level: 5 })
+            avg_level['avg_level'] = 5
+        }
+        document.getElementById('avg_level').value = avg_level['avg_level']
+    })
+    chrome.storage.local.get(['download_toggle'], function (download_toggle) {
+        if (typeof download_toggle['download_toggle'] != "string") {
+            chrome.storage.local.set({ download_toggle: 'off' })
+            download_toggle['download_toggle'] = 'off'
+        }
+        document.getElementById('download_toggle').value = download_toggle['download_toggle']
+    })
 }
 
 function reset_downloads() {

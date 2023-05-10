@@ -294,10 +294,10 @@ function titleCase(string) {
  * to each stylesheet URL.
  */
 function reloadStylesheets() {
-    var queryString = '?reload=' + new Date().getTime();
-    $('link[rel="stylesheet"]').each(function () {
-        this.href = this.href.replace(/\?.*|$/, queryString);
-    });
+    // var queryString = '?reload=' + new Date().getTime();
+    // $('link[rel="stylesheet"]').each(function () {
+    //     this.href = this.href.replace(/\?.*|$/, queryString);
+    // });
 };
 
 function exportSourcePage(containers, header, title, my_url) {
@@ -391,12 +391,12 @@ function onPageLoad() {
     const listing = document.getElementsByClassName('listing')
     const title = document.title
     var hop_list = Object()
-    // const
-    //     keys = my_params.keys(),
-    //     values = my_params.values(),
-    //     entries = my_params.entries();
+    const
+        keys = my_params.keys(),
+        values = my_params.values(),
+        entries = my_params.entries();
 
-    // for (const key of keys) console.log(key);
+    for (const key of keys) console.log(key);
     if ('www.dndbeyond.com' == document.location.href.split('/')[2] & 'sources' == document.location.href.split('/')[3]) {
         exportSourcePage(container, header, title, my_url)
     }
@@ -406,19 +406,19 @@ function onPageLoad() {
     if (details.length != 0) {
         readDetails(details)
     }
-    // if (article.length != 0) {
-    //     readDetails(article)
-    // }
-    // if (monster_links.length != 0) {
-    //     hop_list = catalogMonsters(monster_links, hop_list)
-    // }
-    // if (item_links.length != 0) {
-    //     hop_list = catalogItems(item_links, hop_list)
-    // }
-    // if (spell_links.length != 0) {
-    //     hop_list = catalogSpells(spell_links, hop_list)
-    // }
-    //reloadStylesheets()
+    if (article.length != 0) {
+        readDetails(article)
+    }
+    if (monster_links.length != 0) {
+        hop_list = catalogMonsters(monster_links, hop_list)
+    }
+    if (item_links.length != 0) {
+        hop_list = catalogItems(item_links, hop_list)
+    }
+    if (spell_links.length != 0) {
+        hop_list = catalogSpells(spell_links, hop_list)
+    }
+    reloadStylesheets()
 };
 
 onPageLoad()
