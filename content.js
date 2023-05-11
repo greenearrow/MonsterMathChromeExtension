@@ -77,9 +77,10 @@ function readDetails(details) {
         }
         else {
             console.log(name + ' already downloaded')
-            printRandomEncounter(id + '-' + name)
+
         };
     });
+    printRandomEncounter(id + '-' + name)
 };
 function downloadDNDB(key, og_url, details, val) {
 
@@ -127,9 +128,11 @@ function printRandomEncounter(monster) {
 
                 }
                 var encounter = httpPost(xtraMonkeyHost + '/api/party-up/' + monster, params)
-                var encounter_ele = document.createElement('div')
-                encounter_ele.innerHTML = encounter
-                document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
+                if (!encounter.includes('500 Internal Server Error')) {
+                    var encounter_ele = document.createElement('div')
+                    encounter_ele.innerHTML = encounter
+                    document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
+                }
 
             })
         })
@@ -162,8 +165,18 @@ function httpPost(theUrl, params) {
     xmlHttp.open("POST", theUrl, false);
     // xmlHttp.setRequestHeader('Access-Control-Allow-Origin','*')
     // xmlHttp.setRequestHeader('Access-Control-Allow-Methods')
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState === 4) {   //if complete
+            if (xmlHttp.status === 200) {  //check if "OK" (200)
+                //success
+            } else {
+                xmlHttp.responseText = ""; //otherwise, some other code was returned
+            }
+        }
+    }
     xmlHttp.send(JSON.stringify(params));
     return xmlHttp.responseText
+
 };
 
 function link_decompose(collection, link_type, hop_list) {
