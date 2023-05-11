@@ -62,6 +62,46 @@ function catalogSpells(raw_a, hop_list) {
     return hop_list
 };
 function readDetails(details) {
+    var data = getNameId()
+    var name = data['name']
+    var id = data['id']
+    if (!(id == '-')) {
+        var key = name + '-' + id
+    } else { var key = name }
+
+    chrome.storage.local.get([key, 'download_toggle'], function (val) {
+        if (typeof val[key] != 'string') {
+            if (val['download_toggle'] == 'on') {
+                downloadDNDB(key, data['og_url'], details, val)
+            }
+        }
+        else {
+            console.log(name + ' already downloaded')
+            printRandomEncounter(id + '-' + name)
+        };
+    });
+};
+function downloadDNDB(key, og_url, details, val) {
+
+    var start_text = "<!DOCTYPE html><html>" + og_url + "<head></head><body>"
+    var end_text = "</body></html>"
+    var details_html = start_text + details[0].outerHTML + end_text
+    var blob = new Blob([details_html], { type: "text/html" })
+    var url = URL.createObjectURL(blob)
+    var filename = key + '.html'
+    var param = {
+        method: 'download',
+        collection: url,
+        filename: filename
+    }
+    chrome.runtime.sendMessage(param)
+    console.log(key)
+    val[key] = key;
+    // Save data
+    chrome.storage.local.set(val)
+    console.log('stored ' + key);
+}
+function getNameId() {
     const og_url = document.querySelectorAll('[property="og:url"]')[0].outerHTML
     var names = document.querySelectorAll('[property="og:url"]')[0].content
     var name = names.split("/").slice(-1)[0]
@@ -72,40 +112,8 @@ function readDetails(details) {
     // } else {
     // var name = document.getElementsByClassName('Core-Styles_Chapter-Title')[0].innerHTML 
     // }
-    var param1 = name
-    if (!(id == '-')) {
-        var key = name + '-' + id
-    } else { var key = name }
-
-    start_text = "<!DOCTYPE html><html>" + og_url + "<head></head><body>"
-    end_text = "</body></html>"
-    chrome.storage.local.get(key, function (val) {
-        // Create property if does not exist (yet)
-        if (typeof val[key] != 'string') {
-            var details_html = start_text + details[0].outerHTML + end_text
-            var blob = new Blob([details_html], { type: "text/html" })
-            var url = URL.createObjectURL(blob)
-            var filename = key + '.html'
-            var param = {
-                method: 'download',
-                collection: url,
-                filename: filename
-            }
-            chrome.runtime.sendMessage(param)
-            // let label = document.createElement("p");
-            // label.innerHTML = 'Downloaded!'
-            // document.getElementsByClassName("page-title")[0].appendChild(label)
-            // Append value of param1
-            console.log(key)
-            val[key] = key;
-            // Save data
-            chrome.storage.local.set(val)
-            console.log('stored ' + key);
-        }
-        else { console.log(name + ' already downloaded') }
-        // else { printRandomEncounter(id+'-'+name) };
-    });
-};
+    return { name: name, id: id, og_url: og_url }
+}
 
 function printRandomEncounter(monster) {
     chrome.storage.local.get(['difficulty'], function (difficulty) {
@@ -377,26 +385,38 @@ async function downloadImage(imageSrc, filename) { //I imagine this will need to
 };
 
 function onPageLoad() {
-    const details = document.getElementsByClassName("more-info") // identifies monster stat block pages (and maybe also spell and magic item pages, but not supported yet)
-    const article = document.getElementsByClassName('p-article') // future - strip articles
-    const header = document.getElementsByClassName("page-header")
-    const container = document.getElementsByClassName("container")
-    const monster_links = document.getElementsByClassName("monster-tooltip") // looks for all monsters listed
-    const item_links = document.getElementsByClassName("magic-item-tooltip") // looks for all magic items listed
-    const spell_links = document.getElementsByClassName("spell-tooltip") // looks for all spells listed
+
+
     const mm_options = document.getElementsByClassName("MM-options") // Extension Options page identification
     const monster_search_form = document.getElementById('monster-search-form')
-    const my_url = document.location.href
+
     const my_params = new URLSearchParams(document.location.search)
     const listing = document.getElementsByClassName('listing')
-    const title = document.title
-    var hop_list = Object()
+
+
     const
         keys = my_params.keys(),
         values = my_params.values(),
         entries = my_params.entries();
 
     for (const key of keys) console.log(key);
+    downloadCheck()
+    indexCheck()
+    if (mm_options.length != 0) {
+        console.log("I'm on my options page!")
+    }
+
+
+
+};
+
+function downloadCheck() {
+    const my_url = document.location.href
+    const details = document.getElementsByClassName("more-info") // identifies monster stat block pages (and maybe also spell and magic item pages, but not supported yet)
+    const article = document.getElementsByClassName('p-article') // future - strip articles
+    const header = document.getElementsByClassName("page-header")
+    const container = document.getElementsByClassName("container")
+    const title = document.title
     chrome.storage.local.get(['download_toggle'], function (download_toggle) {
 
 
@@ -404,19 +424,23 @@ function onPageLoad() {
             if ('www.dndbeyond.com' == document.location.href.split('/')[2] & 'sources' == document.location.href.split('/')[3]) {
                 exportSourcePage(container, header, title, my_url)
             }
-            if (details.length != 0) {
-                readDetails(details)
-            }
+
             // if (article.length != 0) {
             //     readDetails(article)
             // }
 
         }
-
+        if (details.length != 0) {
+            readDetails(details)
+        }
     })
-    if (mm_options.length != 0) {
-        console.log("I'm on my options page!")
-    }
+}
+
+function indexCheck() {
+    const monster_links = document.getElementsByClassName("monster-tooltip") // looks for all monsters listed
+    const item_links = document.getElementsByClassName("magic-item-tooltip") // looks for all magic items listed
+    const spell_links = document.getElementsByClassName("spell-tooltip") // looks for all spells listed
+    var hop_list = Object()
     chrome.storage.local.get(['index_toggle'], function (index_toggle) {
         if (index_toggle['index_toggle'] == 'on') {
             if (monster_links.length != 0) {
@@ -431,8 +455,5 @@ function onPageLoad() {
             reloadStylesheets()
         }
     })
-
-
-};
-
+}
 onPageLoad()
