@@ -2,12 +2,14 @@ function save_options() {
     var num_chars = document.getElementById('num_chars').value
     var avg_level = document.getElementById('avg_level').value
     var difficulty = document.getElementById('difficulty').value
-    var download_toggle = document.getElementById('download_toggle').value
+    var dl_source_toggle = document.getElementById('dl_source_toggle').value
+    var dl_object_toggle = document.getElementById('dl_object_toggle')
     var index_toggle = document.getElementById('index_toggle').value
     chrome.storage.local.set({ num_chars: num_chars });
     chrome.storage.local.set({ avg_level: avg_level });
     chrome.storage.local.set({ difficulty: difficulty });
-    chrome.storage.local.set({ download_toggle: download_toggle });
+    chrome.storage.local.set({ dl_source_toggle: dl_source_toggle });
+    chrome.storage.local.set({ dl_object_toggle: dl_object_toggle });
     chrome.storage.local.set({ index_toggle: index_toggle });
 }
 
@@ -31,12 +33,19 @@ function load_options() {
         }
         document.getElementById('avg_level').value = avg_level['avg_level']
     })
-    chrome.storage.local.get(['download_toggle'], function (download_toggle) {
-        if (typeof download_toggle['download_toggle'] != "string") {
-            chrome.storage.local.set({ download_toggle: 'off' })
-            download_toggle['download_toggle'] = 'off'
+    chrome.storage.local.get(['dl_source_toggle'], function (dl_source_toggle) {
+        if (typeof dl_source_toggle['dl_source_toggle'] != "string") {
+            chrome.storage.local.set({ dl_source_toggle: 'off' })
+            dl_source_toggle['dl_source_toggle'] = 'off'
         }
-        document.getElementById('download_toggle').value = download_toggle['download_toggle']
+        document.getElementById('dl_source_toggle').value = dl_source_toggle['dl_source_toggle']
+    })
+    chrome.storage.local.get(['dl_object_toggle'], function (dl_object_toggle) {
+        if (typeof dl_object_toggle['dl_object_toggle'] != "string") {
+            chrome.storage.local.set({ dl_object_toggle: 'off' })
+            dl_object_toggle['dl_object_toggle'] = 'off'
+        }
+        document.getElementById('dl_object_toggle').value = dl_object_toggle['dl_object_toggle']
     })
     chrome.storage.local.get(['index_toggle'], function (index_toggle) {
         if (typeof index_toggle['index_toggle'] != "string") {

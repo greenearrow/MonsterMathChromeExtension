@@ -69,9 +69,9 @@ function readDetails(details) {
         var key = name + '-' + id
     } else { var key = name }
 
-    chrome.storage.local.get([key, 'download_toggle'], function (val) {
+    chrome.storage.local.get([key, 'dl_object_toggle'], function (val) {
         if (typeof val[key] != 'string') {
-            if (val['download_toggle'] == 'on') {
+            if (val['dl_object_toggle'] == 'on') {
                 downloadDNDB(key, data['og_url'], details, val)
             }
         }
@@ -432,10 +432,10 @@ function downloadCheck() {
     const header = document.getElementsByClassName("page-header")
     const container = document.getElementsByClassName("container")
     const title = document.title
-    chrome.storage.local.get(['download_toggle'], function (download_toggle) {
+    chrome.storage.local.get(['dl_source_toggle'], function (dl_source_toggle) {
 
 
-        if (download_toggle['download_toggle'] == 'on') {
+        if (dl_source_toggle['dl_source_toggle'] == 'on') {
             if ('www.dndbeyond.com' == document.location.href.split('/')[2] & 'sources' == document.location.href.split('/')[3]) {
                 exportSourcePage(container, header, title, my_url)
             }
