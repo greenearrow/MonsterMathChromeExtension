@@ -5,12 +5,14 @@ function save_options() {
     var dl_source_toggle = document.getElementById('dl_source_toggle').value
     var dl_object_toggle = document.getElementById('dl_object_toggle')
     var index_toggle = document.getElementById('index_toggle').value
+    var encounter_toggle = document.getElementById('encounter_toggle').value
     chrome.storage.local.set({ num_chars: num_chars });
     chrome.storage.local.set({ avg_level: avg_level });
     chrome.storage.local.set({ difficulty: difficulty });
     chrome.storage.local.set({ dl_source_toggle: dl_source_toggle });
     chrome.storage.local.set({ dl_object_toggle: dl_object_toggle });
     chrome.storage.local.set({ index_toggle: index_toggle });
+    chrome.storage.local.set({ encounter_toggle: encounter_toggle });
 }
 
 function load_options() {
@@ -49,10 +51,17 @@ function load_options() {
     })
     chrome.storage.local.get(['index_toggle'], function (index_toggle) {
         if (typeof index_toggle['index_toggle'] != "string") {
-            chrome.storage.local.set({ index_toggle: 'off' })
-            index_toggle['index_toggle'] = 'off'
+            chrome.storage.local.set({ index_toggle: 'on' })
+            index_toggle['index_toggle'] = 'on'
         }
         document.getElementById('index_toggle').value = index_toggle['index_toggle']
+    })
+    chrome.storage.local.get(['encounter_toggle'], function(encounter_toggle) {
+        if (typeof encounter_toggle['encounter_toggle']!='string') {
+            chrome.storage.local.set({ encounter_toggle: 'on'})
+            encounter_toggle['encounter_toggle'] = 'on'
+        }
+        document.getElementById('encounter_toggle').value = encounter_toggle['encounter_toggle']
     })
 }
 

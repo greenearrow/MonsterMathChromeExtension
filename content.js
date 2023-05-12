@@ -117,25 +117,22 @@ function getNameId() {
 }
 
 function printRandomEncounter(monster) {
-    chrome.storage.local.get(['difficulty'], function (difficulty) {
-        chrome.storage.local.get(['num_chars'], function (num_chars) {
-            chrome.storage.local.get(['avg_level'], function (avg_level) {
-                var params = {
-                    format: 'html',
-                    difficulty: difficulty["difficulty"],
-                    characters: num_chars["num_chars"],
-                    level: avg_level["avg_level"]
+    chrome.storage.local.get(['difficulty', 'num_chars', 'avg_level', 'encounter_toggle'], function (data) {
+         if (typeof data['encounter_toggle'] == 'string' & data['encounter_toggle'] == 'on') {
+            var params = {
+                format: 'html',
+                difficulty: data["difficulty"] ?? "Medium",
+                characters: data["num_chars"] ?? 5,
+                level: data["avg_level"] ?? 11
 
-                }
-                var encounter = httpPost(xtraMonkeyHost + '/api/party-up/' + monster, params)
-                if (!encounter.includes('500 Internal Server Error')) {
-                    var encounter_ele = document.createElement('div')
-                    encounter_ele.innerHTML = encounter
-                    document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
-                }
-
-            })
-        })
+            }
+            var encounter = httpPost(xtraMonkeyHost + '/api/party-up/' + monster, params)
+            if (!encounter.includes('500 Internal Server Error')) {
+                var encounter_ele = document.createElement('div')
+                encounter_ele.innerHTML = encounter
+                document.getElementsByClassName('more-info')[0].appendChild(encounter_ele)
+            }
+        }
     })
 
 };
