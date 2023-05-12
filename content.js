@@ -142,8 +142,10 @@ function printRandomEncounter(monster) {
 
 function mathBox() {
     if (document.getElementsByClassName('math-box'.len == 0)) {
-        var main_content_container = document.getElementsByClassName('main content-container')[0]
+        var main_content_container = document.getElementsByClassName('secondary-content')[0]
         var math_box = document.createElement('section')
+        math_box.style.backgroundColor = '#fff'
+        math_box.style.border = '1px solid #CBC6C3'
         math_box.classList.add('math-box')
 
         main_content_container.appendChild(math_box)
